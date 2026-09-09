@@ -1,0 +1,344 @@
+[
+  {
+    "class_id": "Tomato___Late_blight",
+    "crop_name": "Tomato",
+    "disease_name": "Late Blight",
+    "scientific_name": "Phytophthora infestans",
+    "description": "Late blight is a devastating oomycete disease that affects tomatoes and potatoes worldwide. It can destroy an entire field within days under cool, wet, and humid conditions.",
+    "causes": "Caused by the fungus-like oomycete Phytophthora infestans. Spores are transported by wind or splashing rain, thriving in 60-70°F (15-21°C) with persistent moisture.",
+    "symptoms": [
+      "Irregular, dark, water-soaked lesions on leaves and stems",
+      "White, fuzzy fungal growth on undersides of leaves during humid mornings",
+      "Large, firm, dark brown greasy lesions on green fruit",
+      "Rapid wilting, browning, and collapse of foliage"
+    ],
+    "severity": "Critical",
+    "organic_treatment": "Immediately prune and bag infected foliage (do not compost). Apply copper-based fungicides (Bordeaux mixture or copper octanoate) every 5-7 days. Spray biofungicides containing Bacillus amyloliquefaciens or Serenade (Bacillus subtilis).",
+    "chemical_treatment": "Apply systemic fungicides containing chlorothalonil, mancozeb, or cymoxanil + famoxadone at first sign. Rotate with fluopicolide or mandipropamid to prevent resistance.",
+    "prevention": "Avoid overhead watering; use drip irrigation. Ensure wide plant spacing for airflow. Plant certified disease-resistant varieties (e.g., Defiant, Mountain Merit, Legend). Destroy cull piles."
+  },
+  {
+    "class_id": "Tomato___Early_blight",
+    "crop_name": "Tomato",
+    "disease_name": "Early Blight",
+    "scientific_name": "Alternaria solani",
+    "description": "Early blight is a common fungal disease that attacks leaves, stems, and fruits, primarily starting on older lower foliage and progressing upwards.",
+    "causes": "Caused by Alternaria solani. The fungus overwinters in crop debris, soil, and solanaceous weeds. Spores spread by wind, rain splashes, and cultivation tools.",
+    "symptoms": [
+      "Circular brown-to-black spots with concentric rings ('target board' pattern)",
+      "Yellow halos (chlorosis) surrounding the dark leaf spots",
+      "Lower leaves wither, die, and drop prematurely (sunscald vulnerability)",
+      "Dark, sunken, leathery lesions at stem ends of fruits"
+    ],
+    "severity": "Moderate",
+    "organic_treatment": "Remove lower leaves up to 18 inches from the soil line. Apply neem oil, copper hydroxide, or potassium bicarbonate sprays every 7-10 days. Mulch heavily around plants to prevent soil splash.",
+    "chemical_treatment": "Spray preventive fungicides like Azoxystrobin, Chlorothalonil, or Pyraclostrobin early in the season before extensive lesions spread.",
+    "prevention": "Practice 3-year crop rotation away from solanaceous crops. Stake and trellis plants for maximum sunlight and aeration. Water at the base only."
+  },
+  {
+    "class_id": "Tomato___Leaf_Mold",
+    "crop_name": "Tomato",
+    "disease_name": "Leaf Mold",
+    "scientific_name": "Passalora fulva (syn. Cladosporium fulvum)",
+    "description": "Leaf mold predominantly impacts greenhouse and high-tunnel tomatoes where relative humidity exceeds 85%, reducing photosynthesis and yield.",
+    "causes": "Favored by warm temperatures (70-75°F / 21-24°C) and prolonged periods of high humidity (>85% RH). Spores survive in greenhouse structures and seed coats.",
+    "symptoms": [
+      "Pale green to pale yellow spots on the upper leaf surface with diffuse margins",
+      "Olive-green to brown velvety mold carpet on the corresponding undersurface",
+      "Leaves curl, turn brown, and drop off",
+      "Flower blossoms blighted, causing blossom drop"
+    ],
+    "severity": "Moderate",
+    "organic_treatment": "Ventilate greenhouses with circulation fans to lower relative humidity below 80%. Apply sulfur dust or copper sulfate. Spray compost tea enriched with beneficial Trichoderma.",
+    "chemical_treatment": "Treat with triflumizole, azoxystrobin, or cyprodinil + fludioxonil according to label rates during high humidity conditions.",
+    "prevention": "Keep foliage strictly dry. Increase vent spacing and raise greenhouse heat slightly at dusk to prevent condensation on leaf surfaces."
+  },
+  {
+    "class_id": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+    "crop_name": "Tomato",
+    "disease_name": "Yellow Leaf Curl Virus",
+    "scientific_name": "Tomato Yellow Leaf Curl Virus (TYLCV)",
+    "description": "TYLCV is a devastating geminivirus transmitted by the sweetpotato/silverleaf whitefly (Bemisia tabaci), capable of causing 100% crop loss if infection occurs early.",
+    "causes": "Vector transmission by the whitefly Bemisia tabaci biotype B and Q. Not seed-transmitted or mechanically transmitted through touch.",
+    "symptoms": [
+      "Severe stunting of young plants and bushy appearance",
+      "Leaves cupped upwards with interveinal chlorosis and yellow margins",
+      "Marked reduction in leaf size ('little leaf' appearance)",
+      "Flower drop and drastic reduction in fruit setting; remaining fruit is small and deformed"
+    ],
+    "severity": "Critical",
+    "organic_treatment": "Eradicate whitefly vectors using insecticidal soaps, horticultural oils, and neem-derived azadirachtin. Install fine 50-mesh insect netting in greenhouses and yellow sticky traps in fields.",
+    "chemical_treatment": "Apply systemic insecticides targeting whiteflies (e.g., imidacloprid, thiamethoxam, or cyantraniliprole) early in transplant stages. Rotate modes of action.",
+    "prevention": "Plant certified TYLCV-resistant hybrids (e.g., Tygress, Skyway, Charger). Eradicate volunteer nightshades and weeds around perimeter."
+  },
+  {
+    "class_id": "Tomato___healthy",
+    "crop_name": "Tomato",
+    "disease_name": "Healthy",
+    "scientific_name": "Solanum lycopersicum",
+    "description": "Foliage exhibits vibrant green chlorophyll saturation, robust vascular turgidity, uniform leaf structure, and no signs of bacterial, viral, or fungal pathology.",
+    "causes": "Optimal soil nutrition, balanced moisture, adequate sunlight, and effective pest management.",
+    "symptoms": [
+      "Vibrant uniform deep-green leaf blade without chlorosis or necrosis",
+      "Firm, well-developed stems with healthy trichomes (hairs)",
+      "Clean margins without lesions, spots, or curling",
+      "Vigorous blossom development and fruit set"
+    ],
+    "severity": "Healthy",
+    "organic_treatment": "Continue routine organic fertilization (balanced compost, fish emulsion, kelp meal). Maintain 2-3 inches of clean straw mulch.",
+    "chemical_treatment": "No treatment needed. Maintain preventative integrated pest management (IPM) scouting.",
+    "prevention": "Consistent drip irrigation, regular calcium supply to prevent blossom end rot, and periodic pruning of ground suckers."
+  },
+  {
+    "class_id": "Potato___Early_blight",
+    "crop_name": "Potato",
+    "disease_name": "Early Blight",
+    "scientific_name": "Alternaria solani",
+    "description": "A prevalent fungal foliar disease in potato production that causes premature canopy defoliation and tuber dry rot.",
+    "causes": "Alternaria solani survives in infected crop debris. Favorable conditions include warm temperatures (75-85°F) alternating with wet and dry periods.",
+    "symptoms": [
+      "Small dark brown to black spots showing distinct target-like concentric rings",
+      "Spots coalesce causing leaf margins to curl and dry up ('firing')",
+      "Tuber infection shows brown, dry, sunken irregular surface lesions with purple cast",
+      "Premature vine dying and reduced tuber bulk"
+    ],
+    "severity": "Moderate",
+    "organic_treatment": "Foliar spray with liquid copper or Bacillus subtilis at weekly intervals. Ensure optimal nitrogen fertility as stressed plants are much more susceptible.",
+    "chemical_treatment": "Standard protective sprays with Chlorothalonil, Mancozeb, or Pyraclostrobin beginning at canopy closure.",
+    "prevention": "Destroy volunteer potatoes; practice 3 to 4-year crop rotations; kill potato vines 2 weeks prior to harvest to prevent tuber contamination."
+  },
+  {
+    "class_id": "Potato___Late_blight",
+    "crop_name": "Potato",
+    "disease_name": "Late Blight",
+    "scientific_name": "Phytophthora infestans",
+    "description": "Historically responsible for the Irish Potato Famine, late blight remains one of the most destructive agricultural diseases known, capable of rotting entire potato fields in 7-10 days.",
+    "causes": "Phytophthora infestans oomycete spores carried by cool, damp wind currents. Survives between seasons exclusively in living potato tuber tissue.",
+    "symptoms": [
+      "Irregular dark green to purplish-brown water-soaked lesions expanding rapidly",
+      "Faint white cottony mildew under the leaf margin during high humidity",
+      "Stem rot turning dark brown and brittle, collapsing stems",
+      "Tubers develop granular, reddish-brown dry rot extending inward under skin"
+    ],
+    "severity": "Critical",
+    "organic_treatment": "Immediately destroy and bury heavily infected vines. Apply fixed copper sprays before rain events to protect healthy foliage.",
+    "chemical_treatment": "Immediate application of specific anti-oomycete compounds: mandipropamid, fluopicolide, or dimethomorph combined with a protectant fungicide.",
+    "prevention": "Plant only certified disease-free seed tubers. Eliminate all cull piles by burying or freezing. Monitor regional late-blight forecast systems."
+  },
+  {
+    "class_id": "Potato___healthy",
+    "crop_name": "Potato",
+    "disease_name": "Healthy",
+    "scientific_name": "Solanum tuberosum",
+    "description": "Vigorous potato canopy with rich, crisp emerald leaves, sturdy upright stems, and optimal vegetative growth without pathogen infestation.",
+    "causes": "Good seed potato quality, adequate hilling, balanced phosphorus-potassium soil profile, and proper moisture control.",
+    "symptoms": [
+      "Lush, uniform green leaf color across top and bottom tiers",
+      "No spotting, yellowing margins, or stem darkening",
+      "Erect, sturdy vegetative canopy with good turgor",
+      "Robust root stolons setting healthy tuber clusters"
+    ],
+    "severity": "Healthy",
+    "organic_treatment": "Continue balanced organic hilling and compost tea applications.",
+    "chemical_treatment": "No chemical treatment required.",
+    "prevention": "Maintain scheduled soil moisture monitoring, hill potatoes every 2-3 weeks, and inspect for Colorado potato beetle."
+  },
+  {
+    "class_id": "Corn_(maize)___Common_rust_",
+    "crop_name": "Corn (Maize)",
+    "disease_name": "Common Rust",
+    "scientific_name": "Puccinia sorghi",
+    "description": "Common rust is an airborne fungal disease of corn characterized by prominent cinnamon-brown pustules across both upper and lower leaf surfaces.",
+    "causes": "Puccinia sorghi fungal urediniospores blown northward each spring from tropical and subtropical regions. Thrives in moderate temperatures (60-75°F) with high humidity.",
+    "symptoms": [
+      "Oval to elongate cinnamon-brown powdery pustules (uredinia) scattered on leaves",
+      "Pustules rupture through both upper and lower epidermal layers",
+      "Pustules darken to brownish-black late in the season (teliospore stage)",
+      "Severe infections lead to leaf chlorosis, necrosis, and premature lodging"
+    ],
+    "severity": "Moderate",
+    "organic_treatment": "Apply sulfur dusts or copper fungicides at the earliest detection of rust flecks. Enhance soil mycorrhizal biology.",
+    "chemical_treatment": "Foliar fungicides such as azoxystrobin + propiconazole, pyraclostrobin + metconazole, or trifloxystrobin applied at tassel emergence (VT to R1) if pustules are present on ear leaves.",
+    "prevention": "Plant corn hybrids with high polygenic or monogenic (Rp) resistance genes. Early planting often allows corn to mature before spore loads peak."
+  },
+  {
+    "class_id": "Corn_(maize)___Northern_Leaf_Blight",
+    "crop_name": "Corn (Maize)",
+    "disease_name": "Northern Leaf Blight",
+    "scientific_name": "Exserohilum turcicum",
+    "description": "A devastating foliar fungal disease that causes extensive necrotic cigar-shaped lesions on corn leaves, drastically reducing grain fill.",
+    "causes": "Overwinters in corn residue. Spores are splashed or windblown onto leaves during moderate temperatures (65-80°F) accompanied by extended 6-12 hour dew periods.",
+    "symptoms": [
+      "Distinct long, elliptical, cigar-shaped grayish-green to tan lesions (1-6 inches long)",
+      "Lesions feature smooth margins and develop dark fungal spore mat in damp weather",
+      "Lesions merge, creating broad strips of dead leaf tissue",
+      "Stalk weakening and susceptibility to secondary stalk rots"
+    ],
+    "severity": "High",
+    "organic_treatment": "Crop residue management: shred and shallowly incorporate corn stover to accelerate microbial breakdown. Apply sulfur or biological sprays.",
+    "chemical_treatment": "Apply triazole or strobilurin fungicides (e.g., Pyraclostrobin, Fluxapyroxad, or Tebuconazole) if disease reaches the leaf below the ear before silking.",
+    "prevention": "Choose resistant hybrids carrying Ht genes. Implement minimum 1-year crop rotation with soybeans, alfalfa, or oats."
+  },
+  {
+    "class_id": "Corn_(maize)___healthy",
+    "crop_name": "Corn (Maize)",
+    "disease_name": "Healthy",
+    "scientific_name": "Zea mays",
+    "description": "Vigorous maize plant displaying deep green, ribbon-like leaves with clean venation, robust brace roots, and pristine ear shoot development.",
+    "causes": "Balanced nitrogen supply, well-drained loam soil, sufficient thermal units, and pest-free microclimate.",
+    "symptoms": [
+      "Broad, arching deep green leaves with crisp parallel veins",
+      "Absence of pustules, striping, or necrotic blotches",
+      "Thick, resilient stalk with strong nodal tissue",
+      "Healthy tassel shedding pollen and uniform silk emergence"
+    ],
+    "severity": "Healthy",
+    "organic_treatment": "Maintain side-dressed organic nitrogen (feather meal, blood meal, compost). Ensure deep watering during pollination.",
+    "chemical_treatment": "None required.",
+    "prevention": "Maintain soil fertility testing, avoid compaction, scout weekly for corn borers and armyworms."
+  },
+  {
+    "class_id": "Apple___Apple_scab",
+    "crop_name": "Apple",
+    "disease_name": "Apple Scab",
+    "scientific_name": "Venturia inaequalis",
+    "description": "Apple scab is the single most destructive disease of commercial apples, causing dark velvety lesions on leaves and corky blemishes on fruit that ruin market value.",
+    "causes": "Overwinters in dead fallen leaves on the orchard floor. Spring rains trigger ascospores release, infecting new green tissue when wet for 6-12 hours.",
+    "symptoms": [
+      "Olive-green to velvety brown-black spots with feathered edges on upper leaf surfaces",
+      "Leaves become distorted, puckered, curled, and drop prematurely in mid-summer",
+      "Fruit develops scabby, corky, cracked dark lesions that deform shape",
+      "Twig lesions can develop on young vegetative growth"
+    ],
+    "severity": "High",
+    "organic_treatment": "Spray lime-sulfur or micronized sulfur at green tip through petal fall. Flail mow and spray orchard floor with 5% urea or compost extract in autumn to decompose fallen leaves.",
+    "chemical_treatment": "Preventative sterol-inhibitors (myclobutanil, difenoconazole) or strobilurins (kresoxim-methyl, trifloxystrobin) mixed with protectants like captan or mancozeb.",
+    "prevention": "Prune tree canopies in winter for maximum air and sun penetration. Plant scab-resistant cultivars (e.g., Liberty, Enterprise, Freedom, Honeycrisp)."
+  },
+  {
+    "class_id": "Apple___Black_rot",
+    "crop_name": "Apple",
+    "disease_name": "Black Rot (Frogeye Leaf Spot)",
+    "scientific_name": "Botryosphaeria obtusa",
+    "description": "A fungal disease affecting apple leaves (frogeye leaf spot), branches (cankers), and fruit (black rot), often leading to tree dieback.",
+    "causes": "Fungus survives in dead wood, fire blight strikes, and mummified apples left on trees. Spores germinate across wide temperatures (60-80°F).",
+    "symptoms": [
+      "Frogeye leaf spots: small purple specks expanding into brown spots with distinct purple margins",
+      "Fruit rot begins at calyx as firm brown ring expanding into concentric alternating brown and black bands",
+      "Rotting fruit mummifies and stays attached to branches over winter",
+      "Sunken, reddish-brown bark cankers with cracked outer margins"
+    ],
+    "severity": "Moderate",
+    "organic_treatment": "Physically remove and burn all mummified apples and dead twigs during winter dormancy. Apply copper fungicides during early bud break.",
+    "chemical_treatment": "Captan, Thiophanate-methyl, or Mancozeb sprays timed from pink bud through cover sprays.",
+    "prevention": "Prune out all dead or damaged wood 6 inches below cankers. Maintain tree vigor with balanced fertilizer; avoid bark injury from equipment."
+  },
+  {
+    "class_id": "Apple___healthy",
+    "crop_name": "Apple",
+    "disease_name": "Healthy",
+    "scientific_name": "Malus domestica",
+    "description": "Pristine apple orchard foliage showing glossy green leaves, clean branches, sturdy spur systems, and blemish-free pomes.",
+    "causes": "Balanced winter pruning, dormant oil sprays, excellent air circulation, and proper orchard floor management.",
+    "symptoms": [
+      "Vibrant glossy green leaves without spots, puckering, or powdery residues",
+      "Smooth, intact bark on scaffold branches and fruiting spurs",
+      "Vigorous shoot growth (12-18 inches per season)",
+      "Uniform fruit development with clean epidermis"
+    ],
+    "severity": "Healthy",
+    "organic_treatment": "Continue standard dormant organic oil spray in late winter to suppress overwintering insect pests.",
+    "chemical_treatment": "None required.",
+    "prevention": "Maintain tree branch training (60-degree scaffold angles), thin fruits to one per cluster, and irrigate during dry spells."
+  },
+  {
+    "class_id": "Grape___Black_rot",
+    "crop_name": "Grape",
+    "disease_name": "Black Rot",
+    "scientific_name": "Guignardia bidwellii",
+    "description": "One of the most destructive diseases of cultivated grapes in warm, humid climates. Capable of causing 100% loss of berry clusters if unchecked.",
+    "causes": "Overwinters in mummified berries on the trellis wire and vineyard floor. Fungal ascospores release during warm spring rains.",
+    "symptoms": [
+      "Small circular reddish-brown leaf spots with dark margins and tiny black dots (pycnidia)",
+      "Infected berries turn light brown, soften, shrink, and shrivel into hard black 'mummies'",
+      "Black sunken oval cankers on young shoots and tendrils",
+      "Complete cluster desiccation"
+    ],
+    "severity": "Critical",
+    "organic_treatment": "Remove and destroy all mummified clusters during winter pruning. Apply copper sulfate or sulfur fungicides from bud break through veraison.",
+    "chemical_treatment": "Apply myclobutanil, tebuconazole, or azoxystrobin beginning at 1-inch shoot growth through 4 weeks post-bloom.",
+    "prevention": "Trellis canopy management to maximize leaf exposure to wind and sun. Keep vineyard rows weed-free for airflow."
+  },
+  {
+    "class_id": "Grape___Esca_(Black_Measles)",
+    "crop_name": "Grape",
+    "disease_name": "Black Measles (Esca)",
+    "scientific_name": "Phaeomoniella chlamydospora & Fomitiporia mediterranea",
+    "description": "Esca is a complex grapevine trunk disease affecting mature vines, causing characteristic tiger-stripe foliar patterns, fruit spotting, and internal wood decay.",
+    "causes": "Fungal pathogens enter through pruning wounds and harvest cuts, slowly colonizing the xylem vascular system over several years.",
+    "symptoms": [
+      "'Tiger-stripe' foliar pattern: interveinal yellowing and browning bordered by chlorotic bands",
+      "Berry spotting: tiny dark purple to black speckles ('measles') on green or ripening fruit",
+      "Apoplexy: sudden total vine collapse and wilting during hot summer days",
+      "Dark brown wood necrosis visible in cross-section of cordons"
+    ],
+    "severity": "High",
+    "organic_treatment": "Paint pruning cuts with bio-protectant Trichoderma formulations. Prune late in the dormant season when wound healing is rapid.",
+    "chemical_treatment": "Apply wound protectants containing thiophanate-methyl immediately after pruning cuts. No curative chemical treatment exists for internal wood rot.",
+    "prevention": "Use clean, certified nursery stock. Avoid making large pruning wounds in wet weather. Mark and rogue severely degraded vines."
+  },
+  {
+    "class_id": "Grape___healthy",
+    "crop_name": "Grape",
+    "disease_name": "Healthy",
+    "scientific_name": "Vitis vinifera",
+    "description": "Lush grapevine canopy with clean palmate leaves, vigorous shoot tips, intact tendrils, and clean developing clusters.",
+    "causes": "Optimal canopy training (VSP or Scott Henry), balanced vine balance, deficit irrigation, and timely seasonal canopy hedging.",
+    "symptoms": [
+      "Broad, emerald green leaves free of interveinal chlorosis or spotting",
+      "Rapidly growing shoot tips with healthy curling tendrils",
+      "Clean green canes without necrotic lesions or blistering",
+      "Uniform cluster elongation and berry set"
+    ],
+    "severity": "Healthy",
+    "organic_treatment": "Continue compost mulch along vine rows and leaf-pulling in the fruiting zone for sunlight.",
+    "chemical_treatment": "None required.",
+    "prevention": "Scout for leafhoppers and powdery mildew, hedge canopy top to prevent shade crowding."
+  },
+  {
+    "class_id": "Pepper,_bell___Bacterial_spot",
+    "crop_name": "Bell Pepper",
+    "disease_name": "Bacterial Spot",
+    "scientific_name": "Xanthomonas campestris pv. vesicatoria",
+    "description": "A serious seed-borne and water-splashed bacterial disease causing foliar defoliation and blister-like unmarketable fruit lesions in sweet peppers.",
+    "causes": "Bacteria multiply rapidly in warm (75-86°F), rainy, and humid weather. Spreads through driving rain, splashing sprinklers, and handling wet plants.",
+    "symptoms": [
+      "Small water-soaked or translucent circular spots on leaves becoming brown with yellow halos",
+      "Spots coalesce into large necrotic tears, causing severe leaf drop",
+      "Fruit develops raised, rough, wart-like brown scabby blisters",
+      "Stem cankers that weaken branch crotches"
+    ],
+    "severity": "High",
+    "organic_treatment": "Apply copper bactericides mixed with Bacillus subtilis or Serenade Max. Spray actigard (acibenzolar-S-methyl) to induce systemic acquired resistance (SAR).",
+    "chemical_treatment": "Fixed copper compounds combined with mancozeb (co-spray significantly improves efficacy against copper-tolerant strains).",
+    "prevention": "Use certified hot-water treated pathogen-free seeds. Never work in pepper fields while foliage is wet. Rotate with non-solanaceous crops for 2 years."
+  },
+  {
+    "class_id": "Pepper,_bell___healthy",
+    "crop_name": "Bell Pepper",
+    "disease_name": "Healthy",
+    "scientific_name": "Capsicum annuum",
+    "description": "Sturdy bell pepper foliage exhibiting rich dark green color, thick waxy cuticle, symmetrical leaf structure, and vibrant white star-shaped flowers.",
+    "causes": "Adequate soil temperature (>65°F), consistent moisture, balanced nitrogen-phosphorus-potassium fertility, and integrated pest control.",
+    "symptoms": [
+      "Glossy, deep green oval-lanceolate leaves with smooth margins",
+      "Strong main stem and bushy lateral branching",
+      "Abundant pristine white floral blossoms with vibrant yellow anthers",
+      "Blocky, thick-walled green or ripening bell fruits without blemishes"
+    ],
+    "severity": "Healthy",
+    "organic_treatment": "Feed with organic fish-seaweed emulsion and maintain soil moisture with clean organic straw mulch.",
+    "chemical_treatment": "None required.",
+    "prevention": "Ensure adequate soil calcium to prevent blossom end rot, water at soil level, stake heavy fruiting branches."
+  }
+]
