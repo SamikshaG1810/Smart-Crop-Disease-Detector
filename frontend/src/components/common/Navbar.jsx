@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sprout, ArrowRight, Menu, X, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { API_BASE_URL } from '../../api/client';
 
 export const Navbar = () => {
   const { isAuthenticated, user } = useAuth();
@@ -31,7 +32,7 @@ export const Navbar = () => {
           <Link to="/#features" className="hover:text-brand-dark transition-colors">Features</Link>
           <Link to="/#how-it-works" className="hover:text-brand-dark transition-colors">How It Works</Link>
           <Link to="/crops-library" className="hover:text-brand-dark transition-colors">Crop Library</Link>
-          <a href="http://localhost:8000/docs" target="_blank" rel="noreferrer" className="hover:text-brand-dark transition-colors flex items-center">
+          <a href={`${API_BASE_URL}/docs`} target="_blank" rel="noreferrer" className="hover:text-brand-dark transition-colors flex items-center">
             API Docs
           </a>
         </nav>

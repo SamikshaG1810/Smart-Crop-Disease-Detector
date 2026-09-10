@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/common/Navbar';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../api/client';
 
 export const LandingPage = () => {
   const { isAuthenticated, demoLogin } = useAuth();
@@ -285,7 +286,7 @@ export const LandingPage = () => {
 
           <div className="flex items-center space-x-6 text-xs text-gray-400">
             <Link to="/crops-library" className="hover:text-white transition-colors">Crop Library</Link>
-            <a href="http://localhost:8000/docs" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+            <a href={`${API_BASE_URL}/docs`} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
               FastAPI Swagger UI
             </a>
           </div>
