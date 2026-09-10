@@ -62,13 +62,6 @@ async def predict_crop_disease(
 
     # Query disease information
     disease_info = db.query(DiseaseInfo).filter(DiseaseInfo.class_id == pred["class_id"]).first()
-    if not disease_info:
-        # Fallback to closest match or create a transient entry
-        disease_info = db.query(DiseaseInfo).filter(DiseaseInfo.crop_name == pred["crop_name"]).first()
-    
-    if not disease_info:
-        # Safe default
-        disease_info = db.query(DiseaseInfo).first()
 
     severity = disease_info.severity if disease_info else "Moderate"
 

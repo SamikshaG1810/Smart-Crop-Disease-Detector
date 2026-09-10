@@ -58,31 +58,36 @@ def startup_populate_seed():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
-        # Seed Diseases
-        disease_count = db.query(DiseaseInfo).count()
-        if disease_count == 0:
-            seed_file = Path(__file__).parent / "app" / "data" / "disease_seed.json"
-            if seed_file.exists():
-                with open(seed_file, "r", encoding="utf-8") as f:
-                    disease_data = json.load(f)
-                    for item in disease_data:
-                        d = DiseaseInfo(
-                            class_id=item["class_id"],
-                            crop_name=item["crop_name"],
-                            disease_name=item["disease_name"],
-                            scientific_name=item.get("scientific_name"),
-                            description=item["description"],
-                            causes=item["causes"],
-                            symptoms=item["symptoms"],
-                            severity=item["severity"],
-                            organic_treatment=item["organic_treatment"],
-                            chemical_treatment=item["chemical_treatment"],
-                            prevention=item["prevention"],
-                            sample_image_url=item.get("sample_image_url")
-                        )
-                        db.add(d)
-                db.commit()
-                print(f"[AgroScan Startup] Seeded {len(disease_data)} crop disease reference records.")
+        # Upsert disease reference data so new classes are added on existing deployments.
+        seed_file = Path(__file__).parent / "app" / "data" / "disease_seed.json"
+        if seed_file.exists():
+            with open(seed_file, "r", encoding="utf-8") as f:
+                disease_data = json.load(f)
+            for item in disease_data:
+                disease = db.query(DiseaseInfo).filter(
+                    DiseaseInfo.class_id == item["class_id"]
+                ).first()
+                values = {
+                    "class_id": item["class_id"],
+                    "crop_name": item["crop_name"],
+                    "disease_name": item["disease_name"],
+                    "scientific_name": item.get("scientific_name"),
+                    "description": item["description"],
+                    "causes": item["causes"],
+                    "symptoms": item["symptoms"],
+                    "severity": item["severity"],
+                    "organic_treatment": item["organic_treatment"],
+                    "chemical_treatment": item["chemical_treatment"],
+                    "prevention": item["prevention"],
+                    "sample_image_url": item.get("sample_image_url"),
+                }
+                if disease:
+                    for key, value in values.items():
+                        setattr(disease, key, value)
+                else:
+                    db.add(DiseaseInfo(**values))
+            db.commit()
+            print(f"[AgroScan Startup] Upserted {len(disease_data)} crop disease reference records.")
 
         if not settings.SEED_DEMO_DATA:
             return

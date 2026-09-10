@@ -32,7 +32,7 @@ class ScanPredictionResult(BaseModel):
     class_id: str
     confidence: float
     severity: str
-    disease_info: DiseaseInfoResponse
+    disease_info: Optional[DiseaseInfoResponse] = None
     top_probabilities: Optional[List[dict]] = Field(default_factory=list)
 
 class ScanHistoryList(BaseModel):
