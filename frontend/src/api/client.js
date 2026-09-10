@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Use the local FastAPI server by default; VITE_API_URL can override it for deployment.
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+// Use the local FastAPI server by default; VITE_API_URL overrides it in production.
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
