@@ -19,6 +19,7 @@ class ScanResponse(ScanBase):
     image_url: str
     original_filename: Optional[str] = None
     created_at: datetime
+    detector: str = "leaf"
     disease_info: Optional[DiseaseInfoResponse] = None
 
     class Config:
@@ -31,7 +32,9 @@ class ScanPredictionResult(BaseModel):
     disease_name: str
     class_id: str
     confidence: float
+    engine: str
     severity: str
+    detector: str = "leaf"
     disease_info: Optional[DiseaseInfoResponse] = None
     top_probabilities: Optional[List[dict]] = Field(default_factory=list)
 

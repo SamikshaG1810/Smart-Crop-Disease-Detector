@@ -45,7 +45,7 @@ export const LandingPage = () => {
           {/* Tagline pill */}
           <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs sm:text-sm font-semibold mb-8 shadow-soft-sm">
             <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
-            <span>MobileNetV2 Transfer Learning • 98.4% Diagnostic Accuracy</span>
+            <span>MobileNetV2 • 38 PlantVillage Categories</span>
           </div>
 
           {/* Big Centered Headline */}
@@ -201,7 +201,7 @@ export const LandingPage = () => {
                 Neural Vision Inference
               </h3>
               <p className="text-sm text-slate-textMuted leading-relaxed">
-                MobileNetV2 processes the 224x224 leaf tensor against 19+ PlantVillage disease profiles, calculating chlorosis, lesions, and confidence metrics.
+                MobileNetV2 compares a 224x224 leaf image against 38 PlantVillage categories. Results on field photos can differ from the training images.
               </p>
             </div>
 

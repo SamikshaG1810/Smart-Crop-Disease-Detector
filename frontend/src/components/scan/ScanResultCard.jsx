@@ -25,6 +25,8 @@ export const ScanResultCard = ({ result, onResetScan }) => {
     crop_name,
     disease_name,
     confidence,
+    engine,
+    detector = 'leaf',
     severity,
     image_url,
     disease_info,
@@ -37,6 +39,22 @@ export const ScanResultCard = ({ result, onResetScan }) => {
     : `${API_BASE_URL}${image_url}`;
 
   const isHealthy = disease_name.toLowerCase() === 'healthy';
+  const engineLabel = engine === 'fruit_svm'
+    ? 'Fruit SVM classifier'
+    : engine === 'keras_cnn'
+      ? 'MobileNetV2 model'
+      : engine === 'tflite'
+        ? 'TFLite model'
+        : engine
+          ? 'Unknown classifier'
+          : 'Engine status unavailable';
+  const getCandidateLabel = (classId) => {
+    if (detector === 'fruit') {
+      const label = classId.split('___')[1] || classId;
+      return `${crop_name} - ${label.replace(/_/g, ' ')}`;
+    }
+    return classId.replace('___', ' - ').replace(/_/g, ' ');
+  };
 
   const handlePrint = () => {
     window.print();
@@ -53,9 +71,9 @@ export const ScanResultCard = ({ result, onResetScan }) => {
           <div>
             <div className="flex items-center space-x-3 mb-1">
               <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
-                {crop_name} Diagnosis
+                {detector === 'fruit' ? `${crop_name} Fruit Disease` : `${crop_name} Diagnosis`}
               </span>
-              <SeverityBadge severity={severity} size="sm" />
+              {detector === 'leaf' && <SeverityBadge severity={severity} size="sm" />}
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               {disease_name}
@@ -65,6 +83,9 @@ export const ScanResultCard = ({ result, onResetScan }) => {
                 Pathogen: {disease_info.scientific_name}
               </p>
             )}
+            <p className="mt-2 text-[11px] text-emerald-200">
+              Inference engine: {engineLabel}
+            </p>
           </div>
         </div>
 
@@ -72,7 +93,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
         <div className="flex items-center space-x-4 bg-white/10 px-5 py-3 rounded-2xl border border-white/10 self-start md:self-auto">
           <div className="text-right">
             <p className="text-[10px] uppercase font-bold tracking-wider text-gray-300">
-              AI Confidence
+              {detector === 'fruit' ? 'Relative SVM Score' : 'Model Score'}
             </p>
             <p className="text-2xl font-black text-white font-mono">
               {confidence.toFixed(1)}%
@@ -116,7 +137,9 @@ export const ScanResultCard = ({ result, onResetScan }) => {
               />
               <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-[11px] flex justify-between items-center">
                 <span>Field Sample Image</span>
-                <span className="font-mono text-emerald-300">224x224 Tensor</span>
+                <span className="font-mono text-emerald-300">
+                  {detector === 'fruit' ? '128x128 K-means features' : '224x224 RGB input'}
+                </span>
               </div>
             </div>
 
@@ -124,13 +147,13 @@ export const ScanResultCard = ({ result, onResetScan }) => {
             {top_probabilities.length > 1 && (
               <div className="mt-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
                 <p className="text-[11px] font-bold text-slate-textMuted uppercase tracking-wider mb-2">
-                  Top Pathology Candidates
+                  {detector === 'fruit' ? 'Top Fruit Disease Classes' : 'Top Pathology Candidates'}
                 </p>
                 <div className="space-y-2">
                   {top_probabilities.map((prob, idx) => (
                     <div key={idx} className="text-xs">
                       <div className="flex justify-between font-medium text-slate-textDark mb-0.5">
-                        <span className="truncate max-w-[170px]">{prob.class_id.replace('___', ' - ').replace(/_/g, ' ')}</span>
+                        <span className="truncate max-w-[170px]">{getCandidateLabel(prob.class_id)}</span>
                         <span className="font-mono font-bold text-slate-700">{prob.confidence}%</span>
                       </div>
                       <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
@@ -148,6 +171,11 @@ export const ScanResultCard = ({ result, onResetScan }) => {
 
           {/* Pathology Description, Cause & Symptoms */}
           <div className="lg:col-span-8 flex flex-col justify-between space-y-6">
+            {detector === 'fruit' ? (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-950">
+                Fruit category: Citrus. This classifier does not identify fruit species. Its relative SVM score is not a calibrated probability; it was supplied with 150 feature samples across five disease labels and has no verified treatment guidance. Non-citrus fruits are unsupported. Confirm results with a qualified agricultural specialist before acting.
+              </div>
+            ) : <>
             <div>
               <h3 className="text-sm font-bold text-slate-textMuted uppercase tracking-wider mb-2">
                 Pathology Overview
@@ -187,11 +215,12 @@ export const ScanResultCard = ({ result, onResetScan }) => {
                 </div>
               </div>
             )}
+            </>}
           </div>
         </div>
 
         {/* Treatment Protocol Tabs (Organic vs Chemical vs Prevention) */}
-        <div className="pt-4 border-t border-gray-100">
+        {detector !== 'fruit' && <div className="pt-4 border-t border-gray-100">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <h3 className="text-lg font-bold text-slate-textDark flex items-center gap-2">
               <span>Treatment Protocols & Recommendations</span>
@@ -279,7 +308,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
               </div>
             )}
           </div>
-        </div>
+        </div>}
 
         {/* Action Footer */}
         <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-gray-100">
@@ -300,7 +329,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
             className="inline-flex items-center px-6 py-2.5 rounded-full bg-brand-dark hover:bg-brand-forest text-white text-xs sm:text-sm font-bold shadow-soft-sm hover:shadow-soft-md transition-all group"
           >
             <RefreshCw className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-500" />
-            Scan Another Crop Leaf
+            {detector === 'fruit' ? 'Scan Another Fruit' : 'Scan Another Crop Leaf'}
           </button>
         </div>
       </div>

@@ -118,11 +118,16 @@ Inference is modularized in `backend/app/ml/model.py`.
 
 - **Verified pretrained model:** Run `python -m app.ml.download_verify_model` from `backend` to download the Hugging Face MobileNetV2 model and generate its matching `class_indices.json` file. The verifier checks archive integrity, rejects unsafe executable layers, confirms the MobileNetV2 backbone, and requires a 38-unit softmax output.
 - **Inference preprocessing:** The model contains its own `[-1, 1]` preprocessing layer. The backend only converts uploads to RGB and resizes them to `224x224`; it does not normalize them a second time.
-- **Fallback:** If the verified model file is absent, the backend uses the heuristic analyzer for demos and reports that mode in logs. It is not a substitute for a validated disease model.
+- **Missing model behavior:** If the verified model file is missing or cannot be loaded, scans return HTTP 503 instead of a heuristic or fabricated diagnosis. Download the verified weights before scanning.
+- **Confidence limits:** The displayed model score is a softmax probability, not a calibrated guarantee of diagnostic accuracy. The model card reports 98.75% accuracy on a held-out PlantVillage image set; performance on field photos and unsupported plants can be substantially lower. Confirm results with an agronomist before treatment decisions.
 - **Training Script:** You can train your own MobileNetV2 model on the complete PlantVillage dataset using `backend/app/ml/train_mobilenet.py`:
   ```bash
   python app/ml/train_mobilenet.py --data_dir /path/to/PlantVillage --epochs 15 --batch_size 32
   ```
+
+### Fruit Disease Classifier
+
+Choose **Citrus disease** in the scan page before uploading or capturing a citrus fruit photo. The backend trains an SVM from the included feature arrays in `Detection-and-Classification-of-Fruit-Diseases-master/Detection-and-Classification-of-Fruit-Diseases-master/features/` on first use. It classifies five citrus disease labels: Black spot, Canker, Greening, Healthy, and Scab. It does not identify fruit species. The supplied project contains only 150 feature samples and no verified treatment reference, so its score is approximate and the app intentionally does not show leaf treatment advice for fruit results.
 
 ---
 
