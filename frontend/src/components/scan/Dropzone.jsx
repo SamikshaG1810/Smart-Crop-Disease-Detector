@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { UploadCloud, Image as ImageIcon, Sparkles, Check, AlertCircle } from 'lucide-react';
 
-export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }) => {
+export const Dropzone = ({ detector = 'leaf', onFileSelected, selectedFile, previewUrl, clearFile }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -103,10 +103,10 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
             </div>
 
             <h4 className="text-base sm:text-lg font-bold text-slate-textDark mb-1">
-              Drag and drop your leaf photograph
+              Drag and drop a {detector === 'fruit' ? 'fruit' : 'leaf'} photograph
             </h4>
             <p className="text-xs sm:text-sm text-slate-textMuted max-w-md mx-auto mb-4">
-              High-resolution photos with good natural lighting yield 98%+ AI diagnostic accuracy. Supported: JPG, PNG, WEBP.
+              Use a clear, close-up {detector === 'fruit' ? 'citrus fruit' : 'leaf'} photo in natural light. Supported: JPG, PNG, WEBP.
             </p>
 
             <button
@@ -118,7 +118,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
           </div>
 
           {/* Quick Demo Samples */}
-          <div className="mt-6">
+          {detector === 'leaf' && <div className="mt-6">
             <div className="flex items-center space-x-2 text-xs font-semibold text-slate-textMuted uppercase tracking-wider mb-3">
               <Sparkles className="w-3.5 h-3.5 text-brand-sage" />
               <span>Or click a quick test sample leaf:</span>
@@ -147,7 +147,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
                 </button>
               ))}
             </div>
-          </div>
+          </div>}
         </div>
       ) : (
         <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-soft-md">
@@ -172,7 +172,9 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
                 {selectedFile?.name || "Leaf Image Selected"}
               </h4>
               <p className="text-xs text-slate-textMuted mb-4">
-                Ready for deep convolutional neural network analysis across 19 PlantVillage pathogen classifications.
+                {detector === 'fruit'
+                  ? 'Ready for citrus fruit disease classification across Black spot, Canker, Greening, Healthy, and Scab.'
+                  : 'Ready for MobileNetV2 classification across 38 PlantVillage categories. Field-photo results may vary.'}
               </p>
 
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">

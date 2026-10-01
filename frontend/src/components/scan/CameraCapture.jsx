@@ -1,20 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Camera, RefreshCw, X, AlertCircle, Check } from 'lucide-react';
 
-export const CameraCapture = ({ onCapture, onClose }) => {
+export const CameraCapture = ({ detector = 'leaf', onCapture, onClose }) => {
   const videoRef = useRef(null);
-  const [stream, setStream] = useState(null);
+  const streamRef = useRef(null);
   const [error, setError] = useState(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
   const [facingMode, setFacingMode] = useState('environment'); // Prefer back camera on phones
 
   useEffect(() => {
-    let currentStream = null;
+    let active = true;
+    setCameraReady(false);
     const startCamera = async () => {
       try {
         setError(null);
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
-        }
         const constraints = {
           video: {
             facingMode: facingMode,
@@ -24,23 +24,37 @@ export const CameraCapture = ({ onCapture, onClose }) => {
           audio: false,
         };
         const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-        currentStream = mediaStream;
-        setStream(mediaStream);
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream;
+        if (!active) {
+          mediaStream.getTracks().forEach((track) => track.stop());
+          return;
         }
+        streamRef.current = mediaStream;
+        const video = videoRef.current;
+        if (!video) throw new Error('Camera preview is unavailable. Close and reopen the camera.');
+        video.srcObject = mediaStream;
+        await video.play();
+        if (active && video.videoWidth > 0 && video.videoHeight > 0) setCameraReady(true);
       } catch (err) {
         console.error("Camera access error:", err);
-        setError("Unable to access camera. Please allow camera permissions in your browser, or upload an image file instead.");
+        if (!active) return;
+        if (err.name === 'NotAllowedError' || err.name === 'SecurityError') {
+          setError('Camera access is blocked. Allow camera permission for this site in your browser settings, then reopen Live Camera.');
+        } else if (err.name === 'NotFoundError' || err.name === 'OverconstrainedError') {
+          setError('No camera matching this mode was found. Switch camera or upload an image instead.');
+        } else if (err.name === 'NotReadableError') {
+          setError('The camera is busy in another app. Close other camera apps and try again.');
+        } else {
+          setError(err.message || 'Unable to start the camera. Check browser permissions or upload an image instead.');
+        }
       }
     };
 
     startCamera();
 
     return () => {
-      if (currentStream) {
-        currentStream.getTracks().forEach((track) => track.stop());
-      }
+      active = false;
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     };
   }, [facingMode]);
 
@@ -48,25 +62,35 @@ export const CameraCapture = ({ onCapture, onClose }) => {
     setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
   };
 
-  const capturePhoto = () => {
-    if (!videoRef.current) return;
+  const capturePhoto = async () => {
     const video = videoRef.current;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    if (!video || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !video.videoWidth || !video.videoHeight) {
+      setError('The camera is still starting. Wait for the preview, then capture again.');
+      setCameraReady(false);
+      return;
+    }
 
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const file = new File([blob], `camera_leaf_${Date.now()}.jpg`, { type: 'image/jpeg' });
-        // Stop camera tracks
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
-        }
-        onCapture(file);
-      }
-    }, 'image/jpeg', 0.92);
+    setIsCapturing(true);
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    try {
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Could not prepare the captured image. Please try again.');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+      if (!blob || blob.size === 0) throw new Error('The camera returned an empty image. Please capture again.');
+
+      const file = new File([blob], `camera_leaf_${Date.now()}.jpg`, { type: 'image/jpeg' });
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      onCapture(file);
+    } catch (captureError) {
+      console.error('Camera capture error:', captureError);
+      setError(captureError.message || 'Could not capture an image. Please try again.');
+      setIsCapturing(false);
+    }
   };
 
   return (
@@ -74,7 +98,7 @@ export const CameraCapture = ({ onCapture, onClose }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Camera className="w-5 h-5 text-emerald-400" />
-          <h4 className="font-bold text-sm">Live Crop Leaf Camera</h4>
+          <h4 className="font-bold text-sm">Live {detector === 'fruit' ? 'Fruit' : 'Crop Leaf'} Camera</h4>
         </div>
         <button
           onClick={onClose}
@@ -96,6 +120,10 @@ export const CameraCapture = ({ onCapture, onClose }) => {
             autoPlay
             playsInline
             muted
+            onLoadedMetadata={(event) => {
+              if (event.currentTarget.videoWidth > 0 && event.currentTarget.videoHeight > 0) setCameraReady(true);
+            }}
+            onCanPlay={() => setCameraReady(true)}
             className="w-full h-full object-cover"
           />
 
@@ -106,7 +134,7 @@ export const CameraCapture = ({ onCapture, onClose }) => {
             <div className="w-12 h-12 border-b-2 border-l-2 border-emerald-400 absolute bottom-0 left-0" />
             <div className="w-12 h-12 border-b-2 border-r-2 border-emerald-400 absolute bottom-0 right-0" />
             <span className="text-[11px] font-mono text-emerald-300 bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm">
-              Center leaf blade within frame
+              Center {detector === 'fruit' ? 'fruit' : 'leaf'} within frame
             </span>
           </div>
         </div>
@@ -126,9 +154,9 @@ export const CameraCapture = ({ onCapture, onClose }) => {
         <button
           type="button"
           onClick={capturePhoto}
-          disabled={!!error}
+          disabled={!!error || !cameraReady || isCapturing}
           className="w-16 h-16 rounded-full border-4 border-white bg-emerald-500 hover:bg-emerald-400 active:scale-95 transition-all flex items-center justify-center shadow-lg disabled:opacity-50"
-          title="Capture Photo"
+          title={cameraReady ? 'Capture Photo' : 'Waiting for camera preview'}
         >
           <div className="w-12 h-12 rounded-full bg-white/20" />
         </button>

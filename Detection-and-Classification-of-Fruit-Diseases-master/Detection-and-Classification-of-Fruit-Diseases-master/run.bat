@@ -1,0 +1,2 @@
+python FruitDiseaseClassification.py
+pause

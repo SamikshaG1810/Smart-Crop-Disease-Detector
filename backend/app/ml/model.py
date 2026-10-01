@@ -1,10 +1,9 @@
 import os
 import io
-import math
 import logging
 import json
 from pathlib import Path
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, Tuple
 from PIL import Image
 import numpy as np
 
@@ -29,7 +28,7 @@ class CropDiseaseModel:
         self._load_class_indices()
         self.input_shape = (224, 224)
         self.loaded = False
-        self.engine_type = "heuristic_analyzer"
+        self.engine_type = "unavailable"
         self._load_model()
 
     def _load_class_indices(self):
@@ -72,8 +71,8 @@ class CropDiseaseModel:
                 except Exception as e:
                     print(f"[AgroScan ML] Warning: Could not load model from {path}: {e}")
         
-        print("[AgroScan ML] No trained weights file found in app/ml/. Using intelligent vision heuristic engine.")
-        self.engine_type = "smart_heuristic"
+        logger.error("No supported trained model weights found in %s; predictions are disabled", MODEL_DIR)
+        self.engine_type = "unavailable"
 
     def preprocess_image(self, image_bytes: bytes) -> Tuple[Image.Image, np.ndarray]:
         """Resize to the model input and preserve raw 0-255 RGB pixels."""
@@ -82,44 +81,17 @@ class CropDiseaseModel:
         arr = np.array(resized, dtype=np.float32)
         return img, np.expand_dims(arr, axis=0)
 
-    def _analyze_image_features(self, pil_img: Image.Image) -> Dict[str, float]:
-        """Analyzes color distribution and lesion indicators on the leaf image."""
-        img_small = pil_img.resize((128, 128))
-        rgb_data = np.array(img_small, dtype=np.float32)
-        r = rgb_data[:, :, 0]
-        g = rgb_data[:, :, 1]
-        b = rgb_data[:, :, 2]
-
-        total_pixels = 128 * 128
-        # Green dominance
-        green_mask = (g > r) & (g > b) & (g > 60)
-        green_ratio = np.sum(green_mask) / total_pixels
-
-        # Brown/Necrotic lesions (r and g balanced, low b)
-        brown_mask = (r > 70) & (g > 45) & (b < 65) & (np.abs(r - g) < 45)
-        brown_ratio = np.sum(brown_mask) / total_pixels
-
-        # Yellow/Chlorotic halos (high r, high g, lower b)
-        yellow_mask = (r > 120) & (g > 110) & (b < 90)
-        yellow_ratio = np.sum(yellow_mask) / total_pixels
-
-        # Dark/Black rot or soot (all low)
-        dark_mask = (r < 55) & (g < 55) & (b < 55)
-        dark_ratio = np.sum(dark_mask) / total_pixels
-
-        return {
-            "green_ratio": float(green_ratio),
-            "brown_ratio": float(brown_ratio),
-            "yellow_ratio": float(yellow_ratio),
-            "dark_ratio": float(dark_ratio),
-        }
-
     def predict(self, image_bytes: bytes, filename: str = "") -> Dict[str, Any]:
         """
         Runs model prediction on the leaf image.
         Returns predicted class_id, crop_name, disease_name, confidence score, and top probabilities.
         """
-        pil_img, tensor = self.preprocess_image(image_bytes)
+        if not self.loaded:
+            raise RuntimeError(
+                "The trained disease model is unavailable. Install verified model weights before scanning."
+            )
+
+        _, tensor = self.preprocess_image(image_bytes)
 
         if self.loaded and self.model is not None:
             preds = np.asarray(self.model.predict(tensor, verbose=0)[0]).reshape(-1)
@@ -157,84 +129,7 @@ class CropDiseaseModel:
                 for i in top3_indices if i < len(self.classes)
             ]
         else:
-            # Intelligent chromatic & filename-guided heuristic analyzer
-            features = self._analyze_image_features(pil_img)
-            fn_lower = filename.lower()
-
-            # Crop detection hint from filename if user uploaded a named file (e.g. tomato_leaf.jpg, potato.jpg)
-            crop_hint = None
-            if "tomato" in fn_lower:
-                crop_hint = "Tomato"
-            elif "potato" in fn_lower:
-                crop_hint = "Potato"
-            elif "corn" in fn_lower or "maize" in fn_lower:
-                crop_hint = "Corn_(maize)"
-            elif "apple" in fn_lower:
-                crop_hint = "Apple"
-            elif "grape" in fn_lower:
-                crop_hint = "Grape"
-            elif "pepper" in fn_lower:
-                crop_hint = "Pepper,_bell"
-
-            # Determine disease based on visual necrotic/chlorotic indicators
-            gr = features["green_ratio"]
-            br = features["brown_ratio"]
-            yr = features["yellow_ratio"]
-            dr = features["dark_ratio"]
-
-            if gr > 0.65 and br < 0.05 and yr < 0.08:
-                # Highly healthy leaf
-                disease_suffix = "healthy"
-                confidence = round(94.5 + (gr * 5.0), 1)
-            elif br > 0.15 or dr > 0.12:
-                # Necrotic blight or black rot
-                if yr > 0.1:
-                    disease_suffix = "Early_blight"
-                elif dr > 0.15:
-                    disease_suffix = "Late_blight"
-                else:
-                    disease_suffix = "Early_blight"
-                confidence = round(91.0 + (br * 20.0), 1)
-            elif yr > 0.18:
-                # Chlorosis / Yellow leaf curl or rust
-                disease_suffix = "Tomato_Yellow_Leaf_Curl_Virus"
-                confidence = round(89.5 + (yr * 25.0), 1)
-            else:
-                # Mild blight / spotting
-                disease_suffix = "Early_blight"
-                confidence = 92.4
-
-            # Bind with crop
-            if crop_hint:
-                target_crop = crop_hint
-            else:
-                target_crop = "Tomato" # Default common sample
-
-            candidate_class = f"{target_crop}___{disease_suffix}"
-            if candidate_class not in self.classes:
-                # Fallback to closest available in that crop
-                matching = [c for c in self.classes if c.startswith(target_crop)]
-                if matching:
-                    if "healthy" in disease_suffix:
-                        candidate_class = [m for m in matching if "healthy" in m][0]
-                    else:
-                        candidate_class = [m for m in matching if "healthy" not in m][0]
-                else:
-                    candidate_class = "Tomato___Early_blight"
-
-            class_id = candidate_class
-            confidence = min(max(confidence, 88.0), 99.2)
-
-            # Build realistic top-3 probabilities
-            top_probs = [
-                {"class_id": class_id, "confidence": round(confidence, 1)},
-            ]
-            remaining = [c for c in self.classes if c != class_id]
-            prob_left = 100.0 - confidence
-            p2 = round(prob_left * 0.7, 1)
-            p3 = round(prob_left * 0.3, 1)
-            top_probs.append({"class_id": remaining[0], "confidence": p2})
-            top_probs.append({"class_id": remaining[1], "confidence": p3})
+            raise RuntimeError("No usable trained inference engine is loaded")
 
         crop_name, disease_name = parse_class_name(class_id)
         logger.info(

@@ -29,7 +29,16 @@ export const SignupPage = () => {
       await signup(formData);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.detail || "Registration failed. Please check your details.");
+      const detail = err.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        setError(detail.map((item) => item.msg).join('; '));
+      } else if (typeof detail === 'string') {
+        setError(detail);
+      } else if (!err.response) {
+        setError('Cannot reach the API. Check that the backend is running and CORS allows http://localhost:5173.');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

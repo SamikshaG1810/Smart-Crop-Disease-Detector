@@ -27,3 +27,7 @@ class Scan(Base):
     confidence_score = synonym("confidence")
 
     owner = relationship("User", back_populates="scans")
+
+    @property
+    def detector(self) -> str:
+        return "fruit" if self.class_id.startswith("Fruit___") else "leaf"

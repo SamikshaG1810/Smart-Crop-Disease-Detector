@@ -213,10 +213,10 @@ export const ProfilePage = () => {
 
                 <div className="bg-gray-50/70 p-3.5 rounded-2xl border border-gray-100">
                   <span className="text-[10px] font-bold uppercase text-slate-textMuted tracking-wider block">
-                    AI Model Accuracy
+                    Model Categories
                   </span>
                   <span className="text-xl font-extrabold text-brand-forest">
-                    98.4%
+                    38 classes
                   </span>
                 </div>
               </div>

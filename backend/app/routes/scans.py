@@ -12,6 +12,7 @@ from app.schemas.scan import ScanResponse, ScanPredictionResult, ScanHistoryList
 from app.schemas.disease import DiseaseInfoResponse
 from app.routes.auth import get_current_user, require_current_user
 from app.ml.model import classifier
+from app.ml.fruit_model import fruit_classifier
 from app.utils.file_storage import save_upload_file
 
 router = APIRouter(tags=["Scans"])
@@ -20,11 +21,24 @@ logger = logging.getLogger(__name__)
 @router.post("/predict", response_model=ScanPredictionResult)
 async def predict_crop_disease(
     file: UploadFile = File(...),
+    detector: str = Form("leaf"),
     field_location: Optional[str] = Form("Field Zone A"),
     notes: Optional[str] = Form(None),
     current_user: User = Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
+    if detector not in {"leaf", "fruit"}:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Detector must be either 'leaf' or 'fruit'.",
+        )
+
+    if detector == "leaf" and not classifier.loaded:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The trained disease model is unavailable. Install the verified model weights before scanning.",
+        )
+
     # Validate content type
     allowed_types = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
     if file.content_type and file.content_type not in allowed_types:
@@ -43,17 +57,36 @@ async def predict_crop_disease(
 
     # Predict
     try:
-        pred = classifier.predict(image_bytes, filename=original_filename)
-    except Exception:
+        if detector == "fruit":
+            pred = fruit_classifier.predict(image_bytes)
+        else:
+            pred = classifier.predict(image_bytes, filename=original_filename)
+    except ValueError as error:
         from pathlib import Path
         Path(file_path).unlink(missing_ok=True)
         raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(error),
+        ) from error
+    except RuntimeError as error:
+        from pathlib import Path
+        Path(file_path).unlink(missing_ok=True)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(error),
+        ) from error
+    except Exception as error:
+        from pathlib import Path
+        Path(file_path).unlink(missing_ok=True)
+        logger.exception("Scan inference failed")
+        raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Inference failed. Please try another image."
-        )
+            detail="Model inference failed. Check the backend log for details.",
+        ) from error
 
     logger.info(
-        "Scan prediction file=%s class=%s confidence=%.2f top3=%s",
+        "Scan prediction engine=%s file=%s class=%s confidence=%.2f top3=%s",
+        pred["engine"],
         file_path,
         pred["class_id"],
         pred["confidence"],
@@ -61,7 +94,9 @@ async def predict_crop_disease(
     )
 
     # Query disease information
-    disease_info = db.query(DiseaseInfo).filter(DiseaseInfo.class_id == pred["class_id"]).first()
+    disease_info = None
+    if detector == "leaf":
+        disease_info = db.query(DiseaseInfo).filter(DiseaseInfo.class_id == pred["class_id"]).first()
 
     severity = disease_info.severity if disease_info else "Moderate"
 
@@ -89,6 +124,8 @@ async def predict_crop_disease(
         "disease_name": scan_record.disease_name,
         "class_id": scan_record.class_id,
         "confidence": scan_record.confidence,
+        "engine": pred["engine"],
+        "detector": detector,
         "severity": scan_record.severity,
         "disease_info": disease_info,
         "top_probabilities": pred.get("top_probabilities", [])

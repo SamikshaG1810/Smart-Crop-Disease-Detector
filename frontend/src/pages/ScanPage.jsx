@@ -21,6 +21,7 @@ import { predictLeafDisease } from '../api/scans';
 export const ScanPage = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mode, setMode] = useState('upload'); // 'upload' or 'camera'
+  const [detector, setDetector] = useState('leaf');
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [fieldLocation, setFieldLocation] = useState('Field Zone A - Greenhouse');
@@ -64,6 +65,7 @@ export const ScanPage = () => {
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
+      formData.append('detector', detector);
       formData.append('field_location', fieldLocation);
       if (notes) formData.append('notes', notes);
 
@@ -105,7 +107,7 @@ export const ScanPage = () => {
             </button>
             <div>
               <h1 className="text-xl font-bold text-slate-textDark tracking-tight">
-                Crop Leaf Diagnostic Studio
+                {detector === 'fruit' ? 'Citrus Fruit Disease Diagnostic Studio' : 'Crop Leaf Diagnostic Studio'}
               </h1>
               <p className="text-xs text-slate-textMuted">
                 Instant AI Classification & Integrated Pest Management Guidance
@@ -136,12 +138,39 @@ export const ScanPage = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                   <div>
                     <h2 className="text-xl font-bold text-slate-textDark">
-                      Select Leaf Image Intake Method
+                      {detector === 'fruit' ? 'Select Citrus Fruit Image Intake Method' : 'Select Leaf Image Intake Method'}
                     </h2>
                     <p className="text-xs sm:text-sm text-slate-textMuted">
                       Upload a high-resolution leaf photo or trigger real-time camera capture
                     </p>
                   </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-textMuted">Detect</span>
+                    <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200" role="group" aria-label="Detection type">
+                      <button
+                        type="button"
+                        aria-pressed={detector === 'leaf'}
+                        onClick={() => setDetector('leaf')}
+                        className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${detector === 'leaf' ? 'bg-brand-dark text-white shadow-soft-sm' : 'text-slate-textMuted hover:text-slate-textDark'}`}
+                      >
+                        Leaf disease
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={detector === 'fruit'}
+                        onClick={() => setDetector('fruit')}
+                        className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${detector === 'fruit' ? 'bg-brand-dark text-white shadow-soft-sm' : 'text-slate-textMuted hover:text-slate-textDark'}`}
+                      >
+                        Citrus disease
+                      </button>
+                    </div>
+                  </div>
+                  {detector === 'fruit' && (
+                    <p className="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                      Citrus only. This model classifies citrus disease labels; it does not identify fruit species. Other fruits are unsupported and may be misclassified.
+                    </p>
+                  )}
 
                   {/* Mode switcher pills */}
                   <div className="inline-flex rounded-full bg-gray-100 p-1 border border-gray-200 self-start sm:self-auto">
@@ -183,6 +212,7 @@ export const ScanPage = () => {
                 {/* Mode: Camera View */}
                 {mode === 'camera' && (
                   <CameraCapture
+                    detector={detector}
                     onCapture={handleCameraCapture}
                     onClose={() => setMode('upload')}
                   />
@@ -191,6 +221,7 @@ export const ScanPage = () => {
                 {/* Mode: Dropzone View */}
                 {mode === 'upload' && (
                   <Dropzone
+                    detector={detector}
                     onFileSelected={handleFileSelected}
                     selectedFile={selectedFile}
                     previewUrl={previewUrl}
