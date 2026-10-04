@@ -1,6 +1,8 @@
-from typing import Optional, List
+from typing import Optional
 import logging
+from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form, Query
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
@@ -10,7 +12,7 @@ from app.models.scan import Scan
 from app.models.disease import DiseaseInfo
 from app.schemas.scan import ScanResponse, ScanPredictionResult, ScanHistoryList
 from app.schemas.disease import DiseaseInfoResponse
-from app.routes.auth import get_current_user, require_current_user
+from app.routes.auth import require_current_user
 from app.ml.model import classifier
 from app.ml.fruit_model import fruit_classifier
 from app.utils.file_storage import save_upload_file
@@ -40,50 +42,50 @@ async def predict_crop_disease(
         )
 
     # Validate content type
-    allowed_types = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
+    allowed_types = {"image/jpeg", "image/png", "image/webp", "image/jpg"}
     if file.content_type and file.content_type not in allowed_types:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail="Invalid image format. Supported formats: JPEG, PNG, WEBP."
         )
 
-    # Save image
+    logger.info("Prediction request received user_id=%s detector=%s", current_user.id, detector)
     original_filename = file.filename or "uploaded_leaf.jpg"
     file_path, public_url = await save_upload_file(file)
+    logger.info("Image received user_id=%s detector=%s", current_user.id, detector)
 
-    # Read image bytes for inference
-    with open(file_path, "rb") as f:
-        image_bytes = f.read()
-
-    print(f"[AgroScan] Prediction request received: file={original_filename} detector={detector} user={current_user.id}")
-
-    # Predict
     try:
-        print("[AgroScan] Starting model inference")
+        with open(file_path, "rb") as image_file:
+            image_bytes = image_file.read()
+
+        logger.info("Image preprocessing and inference started user_id=%s detector=%s", current_user.id, detector)
         if detector == "fruit":
             pred = fruit_classifier.predict(image_bytes)
         else:
             pred = classifier.predict(image_bytes, filename=original_filename)
-        print(f"[AgroScan] Inference complete: class={pred['class_id']} confidence={pred['confidence']}")
+        logger.info(
+            "Inference complete user_id=%s detector=%s class=%s confidence=%.2f engine=%s",
+            current_user.id,
+            detector,
+            pred["class_id"],
+            pred["confidence"],
+            pred["engine"],
+        )
     except ValueError as error:
-        from pathlib import Path
         Path(file_path).unlink(missing_ok=True)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(error),
         ) from error
     except RuntimeError as error:
-        from pathlib import Path
         Path(file_path).unlink(missing_ok=True)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=str(error),
         ) from error
     except Exception as error:
-        from pathlib import Path
         Path(file_path).unlink(missing_ok=True)
-        print(f"[AgroScan ERROR] {type(error).__name__}: {error}")
-        logger.exception("Scan inference failed")
+        logger.exception("Scan inference failed user_id=%s detector=%s", current_user.id, detector)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Model inference failed. Check the backend log for details.",
@@ -103,7 +105,7 @@ async def predict_crop_disease(
     if detector == "leaf":
         disease_info = db.query(DiseaseInfo).filter(DiseaseInfo.class_id == pred["class_id"]).first()
 
-    severity = disease_info.severity if disease_info else "Moderate"
+    severity = pred.get("severity", disease_info.severity if disease_info else "Moderate")
 
     # Save to database
     scan_record = Scan(
@@ -119,8 +121,18 @@ async def predict_crop_disease(
         notes=notes
     )
     db.add(scan_record)
-    db.commit()
+    try:
+        db.commit()
+    except SQLAlchemyError as error:
+        db.rollback()
+        Path(file_path).unlink(missing_ok=True)
+        logger.exception("Could not save scan user_id=%s detector=%s", current_user.id, detector)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Prediction completed but the scan could not be saved.",
+        ) from error
     db.refresh(scan_record)
+    logger.info("Scan saved user_id=%s scan_id=%s detector=%s", current_user.id, scan_record.id, detector)
 
     return {
         "scan_id": scan_record.id,

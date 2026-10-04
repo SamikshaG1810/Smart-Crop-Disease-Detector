@@ -20,9 +20,13 @@ class Settings(BaseSettings):
     STATIC_URL_PREFIX: str = "/uploads"
     
     # CORS
-    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    CORS_ORIGINS: str = (
+        "http://localhost:3000,http://localhost:5173,"
+        "https://smart-crop-disease-detector-1.onrender.com"
+    )
     SEED_DEMO_DATA: bool = False
     MAX_UPLOAD_SIZE_MB: int = 10
+    MAX_IMAGE_PIXELS: int = 12_000_000
 
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env", extra="ignore")
 

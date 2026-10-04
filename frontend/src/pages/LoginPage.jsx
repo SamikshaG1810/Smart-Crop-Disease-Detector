@@ -28,8 +28,10 @@ export const LoginPage = () => {
         }).join('; '));
       } else if (typeof detail === 'string') {
         setError(detail);
+      } else if (!err.response) {
+        setError('Cannot reach the API. Check the backend URL and CORS configuration.');
       } else {
-        setError('Invalid email or password. Please try again.');
+        setError(`Sign-in failed (HTTP ${err.response.status}). Please try again.`);
       }
     } finally {
       setLoading(false);
@@ -42,7 +44,7 @@ export const LoginPage = () => {
     try {
       await demoLogin();
       navigate('/dashboard');
-    } catch (err) {
+    } catch {
       setError("Unable to log in with demo account. Ensure backend is running.");
     } finally {
       setLoading(false);

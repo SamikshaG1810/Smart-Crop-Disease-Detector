@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { loginUser, signupUser, getCurrentUser } from '../api/auth';
 
 const AuthContext = createContext(null);
@@ -11,6 +11,21 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(() => localStorage.getItem('agroscan_token'));
   const [loading, setLoading] = useState(true);
 
+  const logout = useCallback(() => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('agroscan_token');
+    localStorage.removeItem('agroscan_user');
+  }, []);
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      logout();
+    };
+    window.addEventListener('agroscan:unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('agroscan:unauthorized', handleUnauthorized);
+  }, [logout]);
+
   useEffect(() => {
     const initAuth = async () => {
       const storedToken = localStorage.getItem('agroscan_token');
@@ -20,14 +35,18 @@ export const AuthProvider = ({ children }) => {
           setUser(userData);
           localStorage.setItem('agroscan_user', JSON.stringify(userData));
         } catch (err) {
-          console.warn("Session expired, logging out:", err);
-          logout();
+          if (err.response?.status === 401) {
+            console.warn('Saved session expired; signing out.');
+            logout();
+          } else {
+            console.error('Could not verify the saved session with the API:', err);
+          }
         }
       }
       setLoading(false);
     };
     initAuth();
-  }, []);
+  }, [logout]);
 
   const login = async (email, password) => {
     const data = await loginUser(email, password);
@@ -54,13 +73,6 @@ export const AuthProvider = ({ children }) => {
   const updateUser = (updatedUserData) => {
     setUser(updatedUserData);
     localStorage.setItem('agroscan_user', JSON.stringify(updatedUserData));
-  };
-
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('agroscan_token');
-    localStorage.removeItem('agroscan_user');
   };
 
   return (

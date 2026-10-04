@@ -1,4 +1,3 @@
-import os
 import io
 import logging
 import json
@@ -52,7 +51,7 @@ class CropDiseaseModel:
                         self.is_tflite = True
                         self.engine_type = "tflite"
                         self.loaded = True
-                        print(f"[AgroScan ML] Successfully loaded TFLite model: {path.name}")
+                        logger.info("Loaded TFLite crop model: %s", path.name)
                         return
                     else:
                         from tensorflow import keras
@@ -66,10 +65,10 @@ class CropDiseaseModel:
                             )
                         self.engine_type = "keras_cnn"
                         self.loaded = True
-                        print(f"[AgroScan ML] Successfully loaded Keras model: {path.name}")
+                        logger.info("Loaded Keras crop model: %s", path.name)
                         return
                 except Exception as e:
-                    print(f"[AgroScan ML] Warning: Could not load model from {path}: {e}")
+                    logger.warning("Could not load crop model from %s: %s", path, e, exc_info=True)
         
         logger.error("No supported trained model weights found in %s; predictions are disabled", MODEL_DIR)
         self.engine_type = "unavailable"
