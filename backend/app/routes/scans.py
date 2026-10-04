@@ -55,12 +55,16 @@ async def predict_crop_disease(
     with open(file_path, "rb") as f:
         image_bytes = f.read()
 
+    print(f"[AgroScan] Prediction request received: file={original_filename} detector={detector} user={current_user.id}")
+
     # Predict
     try:
+        print("[AgroScan] Starting model inference")
         if detector == "fruit":
             pred = fruit_classifier.predict(image_bytes)
         else:
             pred = classifier.predict(image_bytes, filename=original_filename)
+        print(f"[AgroScan] Inference complete: class={pred['class_id']} confidence={pred['confidence']}")
     except ValueError as error:
         from pathlib import Path
         Path(file_path).unlink(missing_ok=True)
@@ -78,6 +82,7 @@ async def predict_crop_disease(
     except Exception as error:
         from pathlib import Path
         Path(file_path).unlink(missing_ok=True)
+        print(f"[AgroScan ERROR] {type(error).__name__}: {error}")
         logger.exception("Scan inference failed")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

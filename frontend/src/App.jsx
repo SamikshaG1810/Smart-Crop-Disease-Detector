@@ -1,27 +1,29 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage';
-import DashboardPage from './pages/DashboardPage';
-import ScanPage from './pages/ScanPage';
-import HistoryPage from './pages/HistoryPage';
-import CropLibraryPage from './pages/CropLibraryPage';
-import SettingsPage from './pages/SettingsPage';
-import ProfilePage from './pages/ProfilePage';
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const ScanPage = lazy(() => import('./pages/ScanPage'));
+const HistoryPage = lazy(() => import('./pages/HistoryPage'));
+const CropLibraryPage = lazy(() => import('./pages/CropLibraryPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+
+const PageLoader = () => (
+  <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-xs font-semibold text-slate-textMuted">
+    Loading...
+  </div>
+);
 
 // Protected route wrapper
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-xs font-semibold text-slate-textMuted">
-        Loading AgroScan Farm Suite...
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!isAuthenticated) {
@@ -35,6 +37,7 @@ export const App = () => {
   return (
     <AuthProvider>
       <Router>
+        <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
@@ -95,6 +98,7 @@ export const App = () => {
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </Suspense>
       </Router>
     </AuthProvider>
   );

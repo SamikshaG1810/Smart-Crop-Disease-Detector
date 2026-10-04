@@ -78,7 +78,21 @@ export const ScanPage = () => {
       setScanResult(result);
     } catch (err) {
       console.error("Analysis failed:", err);
-      setError(err.response?.data?.detail || "Inference failed. Check that backend server is reachable.");
+      if (err.response) {
+        const status = err.response.status;
+        const detail = err.response.data?.detail;
+        if (status === 401) setError("Session expired. Please log in again.");
+        else if (status === 403) setError("Permission denied.");
+        else if (status === 400) setError(detail || "Invalid image or request.");
+        else if (status === 413) setError("Image too large. Please upload a smaller file.");
+        else if (status === 503) setError("ML model unavailable on server. Contact support.");
+        else if (status === 502) setError("Backend crashed during inference. Check Render logs.");
+        else setError(detail || `Server error (${status}).`);
+      } else if (err.request) {
+        setError("No response from backend. Check CORS configuration and backend URL.");
+      } else {
+        setError(err.message || "Unexpected error.");
+      }
     } finally {
       setIsAnalyzing(false);
     }
