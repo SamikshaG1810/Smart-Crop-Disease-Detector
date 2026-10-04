@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 class UserBase(BaseModel):
-    email: EmailStr
-    full_name: str
+    email: str
+    full_name: str = ""
     farm_name: Optional[str] = "Green Acres Farm"
     farm_location: Optional[str] = "California, USA"
 
