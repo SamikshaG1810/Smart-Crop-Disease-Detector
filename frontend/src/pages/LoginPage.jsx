@@ -22,7 +22,10 @@ export const LoginPage = () => {
     } catch (err) {
       const detail = err.response?.data?.detail;
       if (Array.isArray(detail)) {
-        setError(detail.map((d) => d.msg || JSON.stringify(d)).join('; '));
+        setError(detail.map((d) => {
+          const field = d.loc?.slice(1).join('.') || '';
+          return field ? `${field}: ${d.msg}` : (d.msg || JSON.stringify(d));
+        }).join('; '));
       } else if (typeof detail === 'string') {
         setError(detail);
       } else {
