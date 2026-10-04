@@ -6,13 +6,13 @@ class DiseaseInfoBase(BaseModel):
     crop_name: str
     disease_name: str
     scientific_name: Optional[str] = None
-    description: str
-    causes: str
-    symptoms: List[str]
-    severity: str
-    organic_treatment: str
-    chemical_treatment: str
-    prevention: str
+    description: str = ""
+    causes: str = ""
+    symptoms: List[str] = []
+    severity: str = "Moderate"
+    organic_treatment: str = ""
+    chemical_treatment: str = ""
+    prevention: str = ""
     sample_image_url: Optional[str] = None
 
 class DiseaseInfoResponse(DiseaseInfoBase):
