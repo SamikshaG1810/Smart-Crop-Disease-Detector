@@ -29,5 +29,8 @@ class Token(BaseModel):
     token_type: str = "bearer"
     user: UserResponse
 
-class TokenData(BaseModel):
-    email: Optional[str] = None
+class LoginRequest(BaseModel):
+    email: Optional[EmailStr] = None
+    username: Optional[str] = None
+    password: str
+

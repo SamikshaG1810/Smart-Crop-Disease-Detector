@@ -10,6 +10,11 @@ export const apiClient = axios.create({
   },
 });
 
+// Warm up the backend on first load to reduce Render cold-start delay
+if (API_BASE_URL) {
+  axios.get(`${API_BASE_URL}/healthz`, { timeout: 10000 }).catch(() => {});
+}
+
 // Attach JWT token automatically if available in localStorage
 apiClient.interceptors.request.use(
   (config) => {

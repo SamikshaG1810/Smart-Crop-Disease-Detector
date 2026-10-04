@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.auth import UserCreate, UserResponse, Token, UserUpdate
+from app.schemas.auth import UserCreate, UserResponse, Token, UserUpdate, LoginRequest
 from app.utils.security import verify_password, get_password_hash, create_access_token, decode_access_token
 
 router = APIRouter(tags=["Authentication"])
@@ -62,19 +62,16 @@ def signup(user_in: UserCreate, db: Session = Depends(get_db)):
     }
 
 @router.post("/login", response_model=Token)
-def login_json(credentials: dict, db: Session = Depends(get_db)):
-    # Support JSON login body: { "email": "...", "password": "..." } or { "username": "...", "password": "..." }
-    email = credentials.get("email") or credentials.get("username")
-    password = credentials.get("password")
-
-    if not email or not password:
+def login_json(credentials: LoginRequest, db: Session = Depends(get_db)):
+    email = credentials.email or credentials.username
+    if not email or not credentials.password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email and password are required"
         )
 
     user = db.query(User).filter(User.email == email).first()
-    if not user or not verify_password(password, user.hashed_password):
+    if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password"
