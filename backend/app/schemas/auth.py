@@ -30,7 +30,7 @@ class Token(BaseModel):
     user: UserResponse
 
 class LoginRequest(BaseModel):
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     username: Optional[str] = None
     password: str
 
