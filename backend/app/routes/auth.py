@@ -2,6 +2,8 @@ from datetime import timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Form
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -12,6 +14,13 @@ from app.utils.security import verify_password, get_password_hash, create_access
 router = APIRouter(tags=["Authentication"])
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login-form", auto_error=False)
 
+def _normalized_email(email: str) -> str:
+    return email.strip().lower()
+
+def _find_user_by_email(db: Session, email: str) -> Optional[User]:
+    normalized_email = _normalized_email(email)
+    return db.query(User).filter(func.lower(func.trim(User.email)) == normalized_email).first()
+
 def get_current_user(token: Optional[str] = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Optional[User]:
     if not token:
         return None
@@ -21,8 +30,7 @@ def get_current_user(token: Optional[str] = Depends(oauth2_scheme), db: Session 
     email: str = payload.get("sub")
     if not email:
         return None
-    user = db.query(User).filter(User.email == email).first()
-    return user
+    return _find_user_by_email(db, email)
 
 def require_current_user(user: Optional[User] = Depends(get_current_user)) -> User:
     if not user:
@@ -35,23 +43,31 @@ def require_current_user(user: Optional[User] = Depends(get_current_user)) -> Us
 
 @router.post("/signup", response_model=Token, status_code=status.HTTP_201_CREATED)
 def signup(user_in: UserCreate, db: Session = Depends(get_db)):
-    existing_user = db.query(User).filter(User.email == user_in.email).first()
+    email = _normalized_email(user_in.email)
+    existing_user = _find_user_by_email(db, email)
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email address already exists"
         )
     
     hashed_pwd = get_password_hash(user_in.password)
     user = User(
         full_name=user_in.full_name,
-        email=user_in.email,
+        email=email,
         hashed_password=hashed_pwd,
         farm_name=user_in.farm_name or "Green Acres Farm",
         farm_location=user_in.farm_location or "California, USA"
     )
     db.add(user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as error:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this email address already exists",
+        ) from error
     db.refresh(user)
 
     token = create_access_token({"sub": user.email, "id": user.id})
@@ -63,14 +79,14 @@ def signup(user_in: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login_json(credentials: LoginRequest, db: Session = Depends(get_db)):
-    email = credentials.email or credentials.username
+    email = _normalized_email(credentials.email or credentials.username or "")
     if not email or not credentials.password:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email and password are required"
         )
 
-    user = db.query(User).filter(User.email == email).first()
+    user = _find_user_by_email(db, email)
     if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -86,7 +102,7 @@ def login_json(credentials: LoginRequest, db: Session = Depends(get_db)):
 
 @router.post("/login-form", response_model=Token)
 def login_form(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == form_data.username).first()
+    user = _find_user_by_email(db, form_data.username)
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

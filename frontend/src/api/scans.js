@@ -1,7 +1,9 @@
 import apiClient from './client';
 
 export const predictLeafDisease = async (formData) => {
-  const response = await apiClient.post('/api/scans/predict', formData);
+  const response = await apiClient.post('/api/scans/predict', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 };
 

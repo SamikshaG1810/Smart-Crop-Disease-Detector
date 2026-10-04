@@ -96,11 +96,15 @@ export const ScanPage = () => {
         const status = err.response.status;
         const detail = err.response.data?.detail;
         const detailMsg = Array.isArray(detail)
-          ? detail.map((d) => d.msg || JSON.stringify(d)).join('; ')
+          ? detail.map((d) => {
+              const field = d.loc?.slice(1).join('.');
+              return field ? `${field}: ${d.msg}` : (d.msg || JSON.stringify(d));
+            }).join('; ')
           : typeof detail === 'string' ? detail : null;
         if (status === 401) setError('Session expired. Please log in again.');
         else if (status === 403) setError('Permission denied.');
         else if (status === 400) setError(detailMsg || 'Invalid image or request.');
+        else if (status === 422) setError(detailMsg || 'The scan request is missing required information.');
         else if (status === 413) setError('Image too large. Please upload a smaller file.');
         else if (status === 503) setError('ML model unavailable on server. Contact support.');
         else if (status === 502) setError('Backend crashed during inference. Check Render logs.');
