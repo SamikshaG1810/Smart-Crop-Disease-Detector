@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Component } from 'react';
 import { 
   Scan, 
   Camera, 
@@ -17,6 +17,20 @@ import CameraCapture from '../components/scan/CameraCapture';
 import ScanningAnimation from '../components/scan/ScanningAnimation';
 import ScanResultCard from '../components/scan/ScanResultCard';
 import { predictLeafDisease } from '../api/scans';
+
+class ScanErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { hasError: false, error: null }; }
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  render() {
+    if (this.state.hasError) return (
+      <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm">
+        <strong>Result display error:</strong> {this.state.error?.message || 'Unknown error'}
+        <button onClick={() => this.setState({ hasError: false, error: null })} className="ml-4 underline text-xs">Try again</button>
+      </div>
+    );
+    return this.props.children;
+  }
+}
 
 export const ScanPage = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -138,10 +152,12 @@ export const ScanPage = () => {
 
           {/* If analysis succeeded, show diagnostic result card */}
           {!isAnalyzing && scanResult && (
-            <ScanResultCard
-              result={scanResult}
-              onResetScan={resetAll}
-            />
+            <ScanErrorBoundary>
+              <ScanResultCard
+                result={scanResult}
+                onResetScan={resetAll}
+              />
+            </ScanErrorBoundary>
           )}
 
           {/* If not analyzing and no result yet, show image intake form */}

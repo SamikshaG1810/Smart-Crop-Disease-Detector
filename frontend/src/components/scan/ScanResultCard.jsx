@@ -22,12 +22,12 @@ export const ScanResultCard = ({ result, onResetScan }) => {
   if (!result) return null;
 
   const {
-    crop_name,
-    disease_name,
-    confidence,
+    crop_name = 'Unknown',
+    disease_name = 'Unknown',
+    confidence = 0,
     engine,
     detector = 'leaf',
-    severity,
+    severity = 'Moderate',
     image_url,
     disease_info,
     top_probabilities = []
