@@ -83,6 +83,12 @@ uvicorn main:app --reload --port 8000
 
 > **Note:** On first startup, SQLAlchemy creates missing tables. This is not a migration system. Disease reference data is seeded automatically; demo users and sample scans are only created when `SEED_DEMO_DATA=true`.
 
+### Production Deployment: Persistent User and Scan Data
+
+The default `sqlite:///./agroscan.db` database is intended for local development. Many application hosts use temporary local filesystems, and separate backend instances do not share that SQLite file. In those deployments, accounts and scans can appear to disappear, login can fail, and the same email can be registered again.
+
+For production, create a managed PostgreSQL database and set the backend's `DATABASE_URL` environment variable to its connection URL. This project includes the PostgreSQL driver and accepts both `postgres://` and `postgresql://` URLs. Keep the database URL and `SECRET_KEY` configured on the backend service across deployments; do not use SQLite for a multi-instance or ephemeral deployment. Set the frontend's `VITE_API_URL` to the deployed backend origin and rebuild the frontend after changing it. If uploaded images must survive backend restarts, set `UPLOAD_DIR` to persistent storage or use durable object storage. Switching databases does not automatically copy accounts from an existing SQLite file.
+
 ### 2. Frontend Setup
 
 ```bash
