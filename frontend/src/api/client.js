@@ -5,14 +5,13 @@ const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 // Warm up the backend on first load to reduce Render cold-start delay
 if (API_BASE_URL) {
-  axios.get(`${API_BASE_URL}/healthz`, { timeout: 10000 }).catch(() => {});
+  axios.get(`${API_BASE_URL}/healthz`, { timeout: 10000 }).catch((error) => {
+    console.warn('API warm-up request failed:', error.message);
+  });
 }
 
 // Attach JWT token automatically if available in localStorage
@@ -37,6 +36,7 @@ apiClient.interceptors.response.use(
       if (path !== '/login' && path !== '/signup' && path !== '/') {
         localStorage.removeItem('agroscan_token');
         localStorage.removeItem('agroscan_user');
+        window.dispatchEvent(new Event('agroscan:unauthorized'));
       }
     }
     return Promise.reject(error);

@@ -37,8 +37,9 @@ class FruitDiseaseModel:
             if self._classifier is not None:
                 return self._classifier
             if not FEATURES_PATH.is_file() or not LABELS_PATH.is_file():
+                logger.error("Fruit classifier training arrays not found: %s, %s", FEATURES_PATH, LABELS_PATH)
                 raise RuntimeError(
-                    "Fruit classifier training arrays are missing from the added fruit project folder."
+                    "Fruit classifier training arrays are missing from the deployed project."
                 )
 
             features = np.load(FEATURES_PATH, allow_pickle=False)
@@ -58,7 +59,7 @@ class FruitDiseaseModel:
             )
             classifier.fit(features, labels)
             self._classifier = classifier
-            logger.info("Fruit SVM loaded from %d training examples", len(features))
+            logger.info("Fruit SVM trained from %d examples using %d features", len(features), features.shape[1])
             return classifier
 
     @staticmethod
@@ -91,19 +92,23 @@ class FruitDiseaseModel:
         return segmented.reshape(1, -1)
 
     def predict(self, image_bytes: bytes) -> dict[str, Any]:
+        logger.info("Fruit image preprocessing started")
         classifier = self._get_classifier()
         features = self._extract_features(image_bytes)
+        logger.info("Fruit image preprocessing completed")
         decision_scores = classifier.decision_function(features)[0]
         relative_scores = np.exp(decision_scores - np.max(decision_scores))
         relative_scores /= relative_scores.sum()
         ranked_indices = np.argsort(relative_scores)[::-1][:3]
         predicted_index = int(ranked_indices[0])
         disease_name = FRUIT_CLASS_NAMES[predicted_index]
+        confidence = round(float(relative_scores[predicted_index]) * 100, 2)
+        logger.info("Fruit prediction class=%s relative_score=%.2f", disease_name, confidence)
         return {
             "class_id": f"Fruit___{disease_name.replace(' ', '_')}",
             "crop_name": "Citrus",
             "disease_name": disease_name.title() if disease_name != "healthy" else "Healthy",
-            "confidence": round(float(relative_scores[predicted_index]) * 100, 2),
+            "confidence": confidence,
             "score_kind": "relative_svm_score",
             "engine": "fruit_svm",
             "detector": "fruit",

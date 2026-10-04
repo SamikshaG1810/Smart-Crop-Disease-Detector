@@ -87,7 +87,24 @@ uvicorn main:app --reload --port 8000
 
 The default `sqlite:///./agroscan.db` database is intended for local development. Many application hosts use temporary local filesystems, and separate backend instances do not share that SQLite file. In those deployments, accounts and scans can appear to disappear, login can fail, and the same email can be registered again.
 
-For production, create a managed PostgreSQL database and set the backend's `DATABASE_URL` environment variable to its connection URL. This project includes the PostgreSQL driver and accepts both `postgres://` and `postgresql://` URLs. Keep the database URL and `SECRET_KEY` configured on the backend service across deployments; do not use SQLite for a multi-instance or ephemeral deployment. Set the frontend's `VITE_API_URL` to the deployed backend origin and rebuild the frontend after changing it. If uploaded images must survive backend restarts, set `UPLOAD_DIR` to persistent storage or use durable object storage. Switching databases does not automatically copy accounts from an existing SQLite file.
+For production, create a managed PostgreSQL database and set the backend's `DATABASE_URL` environment variable to its connection URL. This project uses SQLAlchemy (not MongoDB), includes the PostgreSQL driver, and accepts both `postgres://` and `postgresql://` URLs. Keep the database URL and `SECRET_KEY` configured on the backend service across deployments; do not use SQLite for a multi-instance or ephemeral deployment. Switching databases does not automatically copy accounts from an existing SQLite file.
+
+For the Render services described below, configure:
+
+| Service | Setting | Value |
+|---|---|---|
+| Backend | Root directory | `backend` |
+| Backend | Build command | `pip install -r requirements.txt` |
+| Backend | Start command | `uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1` |
+| Backend | `SECRET_KEY` | A stable, randomly generated value with at least 32 characters |
+| Backend | `DATABASE_URL` | Connection URL for the persistent PostgreSQL database |
+| Backend | `CORS_ORIGINS` | `https://smart-crop-disease-detector-1.onrender.com,http://localhost:5173,http://localhost:3000` |
+| Frontend | Root directory | `frontend` |
+| Frontend | Build command | `npm ci && npm run build` |
+| Frontend | Publish directory | `dist` |
+| Frontend | `VITE_API_URL` | `https://smart-crop-disease-detector.onrender.com` |
+
+Vite embeds `VITE_API_URL` at build time, so rebuild/redeploy the frontend after changing it. Keep one Uvicorn worker: each worker loads its own TensorFlow model and increases memory use. The leaf model file is 25 MB and is included in the repository; the Citrus classifier is the existing SVM trained once on its tracked feature arrays. Use persistent storage for `UPLOAD_DIR` if uploaded images must survive backend restarts.
 
 ### 2. Frontend Setup
 
@@ -133,7 +150,7 @@ Inference is modularized in `backend/app/ml/model.py`.
 
 ### Fruit Disease Classifier
 
-Choose **Citrus disease** in the scan page before uploading or capturing a citrus fruit photo. The backend trains an SVM from the included feature arrays in `Detection-and-Classification-of-Fruit-Diseases-master/Detection-and-Classification-of-Fruit-Diseases-master/features/` on first use. It classifies five citrus disease labels: Black spot, Canker, Greening, Healthy, and Scab. It does not identify fruit species. The supplied project contains only 150 feature samples and no verified treatment reference, so its score is approximate and the app intentionally does not show leaf treatment advice for fruit results.
+Choose **Citrus disease** in the scan page before uploading or capturing a citrus fruit photo. This repository does not contain a separate Citrus Keras model: the existing Citrus implementation trains an SVM once from the tracked feature arrays in `Detection-and-Classification-of-Fruit-Diseases-master/Detection-and-Classification-of-Fruit-Diseases-master/features/`. The class order comes from that project's training script: Black spot, Canker, Greening, Healthy, and Scab. It does not identify fruit species. The supplied project contains only 150 feature samples and no verified treatment reference, so its score is approximate and the app intentionally does not show leaf treatment advice for fruit results.
 
 ---
 

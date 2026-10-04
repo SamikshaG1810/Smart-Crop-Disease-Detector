@@ -1,4 +1,4 @@
-import os
+import warnings
 import uuid
 from pathlib import Path
 from fastapi import UploadFile
@@ -17,12 +17,7 @@ async def save_upload_file(file: UploadFile) -> tuple[str, str]:
     Returns (relative_file_path, public_url)
     """
     upload_dir = ensure_upload_dir()
-    file_ext = Path(file.filename or "leaf.jpg").suffix.lower()
-    if not file_ext or file_ext not in [".jpg", ".jpeg", ".png", ".webp"]:
-        file_ext = ".jpg"
-
-    unique_filename = f"{uuid.uuid4().hex}{file_ext}"
-    destination = upload_dir / unique_filename
+    destination = upload_dir / f"{uuid.uuid4().hex}.upload"
 
     max_bytes = settings.MAX_UPLOAD_SIZE_MB * 1024 * 1024
     total_bytes = 0
@@ -37,16 +32,39 @@ async def save_upload_file(file: UploadFile) -> tuple[str, str]:
                     )
                 output.write(chunk)
 
-        with Image.open(destination) as image:
-            image.verify()
-    except (HTTPException, UnidentifiedImageError, OSError) as error:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            with Image.open(destination) as image:
+                image_format = image.format
+                width, height = image.size
+                if image_format not in {"JPEG", "PNG", "WEBP"}:
+                    raise HTTPException(
+                        status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                        detail="Unsupported image format. Supported formats: JPEG, PNG, WEBP.",
+                    )
+                if width * height > settings.MAX_IMAGE_PIXELS:
+                    raise HTTPException(
+                        status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                        detail="Image dimensions exceed the maximum supported size.",
+                    )
+                image.verify()
+        file_ext = {"JPEG": ".jpg", "PNG": ".png", "WEBP": ".webp"}[image_format]
+        final_destination = destination.with_suffix(file_ext)
+        destination.replace(final_destination)
+        destination = final_destination
+    except (HTTPException, UnidentifiedImageError, OSError, Image.DecompressionBombError, Image.DecompressionBombWarning) as error:
         destination.unlink(missing_ok=True)
         if isinstance(error, HTTPException):
             raise
+        if isinstance(error, (Image.DecompressionBombError, Image.DecompressionBombWarning)):
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Image dimensions exceed the maximum supported size.",
+            ) from error
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Uploaded file is not a valid image",
         ) from error
 
-    public_url = f"{settings.STATIC_URL_PREFIX}/{unique_filename}"
+    public_url = f"{settings.STATIC_URL_PREFIX}/{destination.name}"
     return str(destination), public_url

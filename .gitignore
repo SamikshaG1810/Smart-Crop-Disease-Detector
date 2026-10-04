@@ -13,6 +13,7 @@ venv/
 backend/agroscan.db
 backend/uploads/*
 backend/app/ml/*.keras
+!backend/app/ml/model_4_mobilenet_finetuned.keras
 
 # Frontend build output
 frontend/dist/
