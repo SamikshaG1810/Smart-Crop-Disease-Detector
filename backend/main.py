@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.requests import Request
 from sqlalchemy import text
 
 from app.config import settings
@@ -29,10 +30,49 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
+
+logger = logging.getLogger(__name__)
+
+
+@app.middleware("http")
+async def log_prediction_request_ids(request: Request, call_next):
+    if request.url.path not in {"/api/scans/predict", "/scans/predict"}:
+        return await call_next(request)
+
+    cf_ray = request.headers.get("cf-ray", "-")
+    rndr_id = request.headers.get("rndr-id", "-")
+    logger.info(
+        "Prediction HTTP request received method=%s path=%s cf_ray=%s rndr_id=%s",
+        request.method,
+        request.url.path,
+        cf_ray,
+        rndr_id,
+    )
+    try:
+        response = await call_next(request)
+    except Exception:
+        logger.exception(
+            "Prediction HTTP request raised method=%s path=%s cf_ray=%s rndr_id=%s",
+            request.method,
+            request.url.path,
+            cf_ray,
+            rndr_id,
+        )
+        raise
+
+    logger.info(
+        "Prediction HTTP response method=%s path=%s status=%s cf_ray=%s rndr_id=%s",
+        request.method,
+        request.url.path,
+        response.status_code,
+        cf_ray,
+        rndr_id,
+    )
+    return response
 
 # Mount upload directory for static leaf images
 upload_dir_path = Path(settings.UPLOAD_DIR).resolve()
@@ -215,7 +255,11 @@ def readyz(db=Depends(get_db)):
         db.execute(text("SELECT 1"))
     except Exception as error:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Database is not ready") from error
-    return {"status": "ready"}
+    return {
+        "status": "ready",
+        "database": engine.dialect.name,
+        "database_persistent": engine.dialect.name != "sqlite",
+    }
 
 if __name__ == "__main__":
     import uvicorn

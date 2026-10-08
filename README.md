@@ -85,9 +85,9 @@ uvicorn main:app --reload --port 8000
 
 ### Production Deployment: Persistent User and Scan Data
 
-The default `sqlite:///./agroscan.db` database is intended for local development. Many application hosts use temporary local filesystems, and separate backend instances do not share that SQLite file. In those deployments, accounts and scans can appear to disappear, login can fail, and the same email can be registered again.
+The default `sqlite:///./agroscan.db` database is intended for local development only. Render's service filesystem is ephemeral unless a persistent disk is explicitly attached, and multiple backend instances do not share a local SQLite file. An SQLite database on the default Render filesystem can therefore disappear after a restart or deploy, making accounts and scans appear to be lost. The backend now refuses to start on Render when `DATABASE_URL` is SQLite, rather than silently accepting a database that cannot meet the persistence requirement.
 
-For production, create a managed PostgreSQL database and set the backend's `DATABASE_URL` environment variable to its connection URL. This project uses SQLAlchemy (not MongoDB), includes the PostgreSQL driver, and accepts both `postgres://` and `postgresql://` URLs. Keep the database URL and `SECRET_KEY` configured on the backend service across deployments; do not use SQLite for a multi-instance or ephemeral deployment. Switching databases does not automatically copy accounts from an existing SQLite file.
+For production, create or use a managed PostgreSQL database and set the backend's `DATABASE_URL` environment variable to its **internal** connection URL. This project uses SQLAlchemy (not MongoDB), includes the PostgreSQL driver, and accepts both `postgres://` and `postgresql://` URLs. Keep the database URL and the same `SECRET_KEY` configured on the backend service across deployments. Switching databases does not automatically copy accounts from an existing SQLite file: preserve/backup the existing database and migrate its users and scans before switching `DATABASE_URL`. Do not delete the old database until the migrated accounts have been verified.
 
 For the Render services described below, configure:
 
@@ -104,7 +104,7 @@ For the Render services described below, configure:
 | Frontend | Publish directory | `dist` |
 | Frontend | `VITE_API_URL` | `https://smart-crop-disease-detector.onrender.com` |
 
-Vite embeds `VITE_API_URL` at build time, so rebuild/redeploy the frontend after changing it. Keep one Uvicorn worker: each worker loads its own TensorFlow model and increases memory use. The leaf model file is 25 MB and is included in the repository; the Citrus classifier is the existing SVM trained once on its tracked feature arrays. Use persistent storage for `UPLOAD_DIR` if uploaded images must survive backend restarts.
+Vite embeds `VITE_API_URL` at build time, so rebuild/redeploy the frontend after changing it. Keep one Uvicorn worker: each worker loads its own TensorFlow model and increases memory use. The leaf model file is 25 MB and is included in the repository. Fruit training arrays are bundled under `backend/app/ml/fruit_data` so they are available when Render builds the backend with `backend` as its root; the Citrus SVM remains separate from the leaf model. Use persistent storage for `UPLOAD_DIR` if uploaded images must survive backend restarts. The `/readyz` endpoint reports the connected database dialect and whether it is non-SQLite.
 
 ### 2. Frontend Setup
 
@@ -150,7 +150,7 @@ Inference is modularized in `backend/app/ml/model.py`.
 
 ### Fruit Disease Classifier
 
-Choose **Citrus disease** in the scan page before uploading or capturing a citrus fruit photo. This repository does not contain a separate Citrus Keras model: the existing Citrus implementation trains an SVM once from the tracked feature arrays in `Detection-and-Classification-of-Fruit-Diseases-master/Detection-and-Classification-of-Fruit-Diseases-master/features/`. The class order comes from that project's training script: Black spot, Canker, Greening, Healthy, and Scab. It does not identify fruit species. The supplied project contains only 150 feature samples and no verified treatment reference, so its score is approximate and the app intentionally does not show leaf treatment advice for fruit results.
+Choose **Citrus disease** in the scan page before uploading or capturing a citrus fruit photo. This repository does not contain a separate Citrus Keras model: the existing Citrus implementation trains an SVM once from the tracked feature arrays bundled in `backend/app/ml/fruit_data/`. The class order comes from that project's training script: Black spot, Canker, Greening, Healthy, and Scab. It does not identify fruit species. The supplied project contains only 150 feature samples and no verified treatment reference, so its score is approximate and the app intentionally does not show leaf treatment advice for fruit results.
 
 ---
 

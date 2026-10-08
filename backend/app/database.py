@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -8,11 +10,18 @@ database_url = settings.DATABASE_URL
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
+if os.getenv("RENDER", "").lower() == "true" and database_url.startswith("sqlite"):
+    raise RuntimeError(
+        "Render deployments require DATABASE_URL to point to a persistent PostgreSQL database; "
+        "the service filesystem is ephemeral."
+    )
+
 connect_args = {"check_same_thread": False} if database_url.startswith("sqlite") else {}
 
 engine = create_engine(
     database_url,
-    connect_args=connect_args
+    connect_args=connect_args,
+    pool_pre_ping=True,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

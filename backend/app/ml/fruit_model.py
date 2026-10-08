@@ -5,22 +5,19 @@ from __future__ import annotations
 import logging
 import threading
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import cv2
 import numpy as np
-from sklearn.svm import SVC
 
 logger = logging.getLogger(__name__)
 
+if TYPE_CHECKING:
+    from sklearn.svm import SVC
+
 FRUIT_CLASS_NAMES = ["Black spot", "Canker", "Greening", "healthy", "Scab"]
-FRUIT_PROJECT_DIR = (
-    Path(__file__).resolve().parents[3]
-    / "Detection-and-Classification-of-Fruit-Diseases-master"
-    / "Detection-and-Classification-of-Fruit-Diseases-master"
-)
-FEATURES_PATH = FRUIT_PROJECT_DIR / "features" / "features.txt.npy"
-LABELS_PATH = FRUIT_PROJECT_DIR / "features" / "labels.txt.npy"
+FRUIT_DATA_DIR = Path(__file__).resolve().parent / "fruit_data"
+FEATURES_PATH = FRUIT_DATA_DIR / "features.txt.npy"
+LABELS_PATH = FRUIT_DATA_DIR / "labels.txt.npy"
 _kmeans_lock = threading.Lock()
 
 
@@ -51,6 +48,8 @@ class FruitDiseaseModel:
             if not np.array_equal(np.unique(labels), np.arange(len(FRUIT_CLASS_NAMES))):
                 raise RuntimeError("Fruit training labels do not match the five documented classes")
 
+            from sklearn.svm import SVC
+
             classifier = SVC(
                 C=12,
                 gamma="scale",
@@ -64,6 +63,8 @@ class FruitDiseaseModel:
 
     @staticmethod
     def _extract_features(image_bytes: bytes) -> np.ndarray:
+        import cv2
+
         encoded = np.frombuffer(image_bytes, dtype=np.uint8)
         image_bgr = cv2.imdecode(encoded, cv2.IMREAD_COLOR)
         if image_bgr is None:

@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File,
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
+from starlette.concurrency import run_in_threadpool
 
 from app.database import get_db
 from app.models.user import User
@@ -60,9 +61,13 @@ async def predict_crop_disease(
 
         logger.info("Image preprocessing and inference started user_id=%s detector=%s", current_user.id, detector)
         if detector == "fruit":
-            pred = fruit_classifier.predict(image_bytes)
+            pred = await run_in_threadpool(fruit_classifier.predict, image_bytes)
         else:
-            pred = classifier.predict(image_bytes, filename=original_filename)
+            pred = await run_in_threadpool(
+                classifier.predict,
+                image_bytes,
+                filename=original_filename,
+            )
         logger.info(
             "Inference complete user_id=%s detector=%s class=%s confidence=%.2f engine=%s",
             current_user.id,

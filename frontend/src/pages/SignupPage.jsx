@@ -35,7 +35,7 @@ export const SignupPage = () => {
       } else if (typeof detail === 'string') {
         setError(detail);
       } else if (!err.response) {
-        setError('Cannot reach the API. Check that the backend is running and CORS allows http://localhost:5173.');
+        setError('Cannot reach the API. Check the production API URL, backend availability, and CORS settings.');
       } else {
         setError('Registration failed. Please try again.');
       }
