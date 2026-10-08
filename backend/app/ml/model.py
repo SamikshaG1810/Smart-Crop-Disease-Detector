@@ -1,6 +1,7 @@
 import io
 import logging
 import json
+import threading
 from pathlib import Path
 from typing import Dict, Any, Tuple
 from PIL import Image
@@ -28,6 +29,7 @@ class CropDiseaseModel:
         self.input_shape = (224, 224)
         self.loaded = False
         self.engine_type = "unavailable"
+        self._inference_lock = threading.Lock()
         self._load_model()
 
     def _load_class_indices(self):
@@ -93,7 +95,8 @@ class CropDiseaseModel:
         _, tensor = self.preprocess_image(image_bytes)
 
         if self.loaded and self.model is not None:
-            preds = np.asarray(self.model.predict(tensor, verbose=0)[0]).reshape(-1)
+            with self._inference_lock:
+                preds = np.asarray(self.model.predict(tensor, verbose=0)[0]).reshape(-1)
             top_idx = int(np.argmax(preds))
             confidence = float(preds[top_idx] * 100.0)
             class_id = self.classes[top_idx] if top_idx < len(self.classes) else self.classes[0]
@@ -108,14 +111,15 @@ class CropDiseaseModel:
                 for i in top3_indices if i < len(self.classes)
             ]
         elif self.loaded and self.interpreter is not None:
-            input_details = self.interpreter.get_input_details()
-            output_details = self.interpreter.get_output_details()
-            input_tensor = tensor
-            if input_details[0]["dtype"] == np.uint8:
-                input_tensor = np.clip(tensor, 0, 255).astype(np.uint8)
-            self.interpreter.set_tensor(input_details[0]['index'], input_tensor)
-            self.interpreter.invoke()
-            preds = self.interpreter.get_tensor(output_details[0]['index'])[0]
+            with self._inference_lock:
+                input_details = self.interpreter.get_input_details()
+                output_details = self.interpreter.get_output_details()
+                input_tensor = tensor
+                if input_details[0]["dtype"] == np.uint8:
+                    input_tensor = np.clip(tensor, 0, 255).astype(np.uint8)
+                self.interpreter.set_tensor(input_details[0]['index'], input_tensor)
+                self.interpreter.invoke()
+                preds = self.interpreter.get_tensor(output_details[0]['index'])[0]
             top_idx = int(np.argmax(preds))
             confidence = float(preds[top_idx] * 100.0)
             class_id = self.classes[top_idx] if top_idx < len(self.classes) else self.classes[0]
