@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from pathlib import Path
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
