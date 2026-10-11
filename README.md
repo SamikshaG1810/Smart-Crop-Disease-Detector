@@ -104,7 +104,7 @@ For the Render services described below, configure:
 | Frontend | Publish directory | `dist` |
 | Frontend | `VITE_API_URL` | `https://smart-crop-disease-detector.onrender.com` |
 
-Vite embeds `VITE_API_URL` at build time, so rebuild/redeploy the frontend after changing it. Keep one Uvicorn worker: each worker loads its own TensorFlow model and increases memory use. The leaf model file is 25 MB and is included in the repository. Fruit training arrays are bundled under `backend/app/ml/fruit_data` so they are available when Render builds the backend with `backend` as its root; the Citrus SVM remains separate from the leaf model. Use persistent storage for `UPLOAD_DIR` if uploaded images must survive backend restarts. The `/readyz` endpoint reports the connected database dialect and whether it is non-SQLite.
+Vite embeds `VITE_API_URL` at build time, so rebuild/redeploy the frontend after changing it. Keep one Uvicorn worker: each worker loads its own TensorFlow model and increases memory use. The leaf model file is 25 MB and is included in the repository. Fruit disease scanning has been removed; existing fruit scan history is retained, but new fruit prediction requests are rejected. Use persistent storage for `UPLOAD_DIR` if uploaded images must survive backend restarts. The `/readyz` endpoint reports the connected database dialect and whether it is non-SQLite.
 
 ### 2. Frontend Setup
 
@@ -147,10 +147,6 @@ Inference is modularized in `backend/app/ml/model.py`.
   ```bash
   python app/ml/train_mobilenet.py --data_dir /path/to/PlantVillage --epochs 15 --batch_size 32
   ```
-
-### Fruit Disease Classifier
-
-Choose **Citrus disease** in the scan page before uploading or capturing a citrus fruit photo. This repository does not contain a separate Citrus Keras model: the existing Citrus implementation trains an SVM from the tracked feature arrays bundled in `backend/app/ml/fruit_data/`. The classifier is warmed once during backend startup, moving training time out of the first user prediction; a cold backend start takes longer as a result. The class order comes from that project's training script: Black spot, Canker, Greening, Healthy, and Scab. It does not identify fruit species. The supplied project contains only 150 feature samples and no verified treatment reference, so its score is approximate and the app intentionally does not show leaf treatment advice for fruit results.
 
 ---
 

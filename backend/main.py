@@ -14,7 +14,6 @@ from app.database import Base, engine, SessionLocal, get_db
 from app.models.disease import DiseaseInfo
 from app.models.user import User
 from app.models.scan import Scan
-from app.ml.fruit_model import fruit_classifier
 from app.utils.security import get_password_hash
 from app.utils.file_storage import ensure_upload_dir
 from app.routes import auth, scans, crops, analytics
@@ -238,10 +237,6 @@ def startup_populate_seed():
 
     finally:
         db.close()
-        try:
-            fruit_classifier.load()
-        except Exception:
-            logger.exception("Fruit classifier warm-up failed; fruit predictions may be unavailable.")
 
 @app.get("/")
 def health_check():
