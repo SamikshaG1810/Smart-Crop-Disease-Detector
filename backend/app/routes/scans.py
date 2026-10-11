@@ -15,7 +15,6 @@ from app.schemas.scan import ScanResponse, ScanPredictionResult, ScanHistoryList
 from app.schemas.disease import DiseaseInfoResponse
 from app.routes.auth import require_current_user
 from app.ml.model import classifier
-from app.ml.fruit_model import fruit_classifier
 from app.utils.file_storage import save_upload_file
 
 router = APIRouter(tags=["Scans"])
@@ -30,13 +29,13 @@ async def predict_crop_disease(
     current_user: User = Depends(require_current_user),
     db: Session = Depends(get_db)
 ):
-    if detector not in {"leaf", "fruit"}:
+    if detector != "leaf":
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Detector must be either 'leaf' or 'fruit'.",
+            detail="Fruit disease scanning is no longer supported. Choose leaf disease.",
         )
 
-    if detector == "leaf" and not classifier.loaded:
+    if not classifier.loaded:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="The trained disease model is unavailable. Install the verified model weights before scanning.",
@@ -60,14 +59,11 @@ async def predict_crop_disease(
             image_bytes = image_file.read()
 
         logger.info("Image preprocessing and inference started user_id=%s detector=%s", current_user.id, detector)
-        if detector == "fruit":
-            pred = await run_in_threadpool(fruit_classifier.predict, image_bytes)
-        else:
-            pred = await run_in_threadpool(
-                classifier.predict,
-                image_bytes,
-                filename=original_filename,
-            )
+        pred = await run_in_threadpool(
+            classifier.predict,
+            image_bytes,
+            filename=original_filename,
+        )
         logger.info(
             "Inference complete user_id=%s detector=%s class=%s confidence=%.2f engine=%s",
             current_user.id,
@@ -107,8 +103,7 @@ async def predict_crop_disease(
 
     # Query disease information
     disease_info = None
-    if detector == "leaf":
-        disease_info = db.query(DiseaseInfo).filter(DiseaseInfo.class_id == pred["class_id"]).first()
+    disease_info = db.query(DiseaseInfo).filter(DiseaseInfo.class_id == pred["class_id"]).first()
 
     severity = pred.get("severity", disease_info.severity if disease_info else "Moderate")
 

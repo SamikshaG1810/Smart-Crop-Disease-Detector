@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Camera, RefreshCw, X, AlertCircle, Check } from 'lucide-react';
+import { Camera, RefreshCw, X, AlertCircle } from 'lucide-react';
 
-export const CameraCapture = ({ detector = 'leaf', onCapture, onClose }) => {
+export const CameraCapture = ({ onCapture, onClose }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const [error, setError] = useState(null);
@@ -98,7 +98,7 @@ export const CameraCapture = ({ detector = 'leaf', onCapture, onClose }) => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Camera className="w-5 h-5 text-emerald-400" />
-          <h4 className="font-bold text-sm">Live {detector === 'fruit' ? 'Fruit' : 'Crop Leaf'} Camera</h4>
+          <h4 className="font-bold text-sm">Live Crop Leaf Camera</h4>
         </div>
         <button
           onClick={onClose}
@@ -134,7 +134,7 @@ export const CameraCapture = ({ detector = 'leaf', onCapture, onClose }) => {
             <div className="w-12 h-12 border-b-2 border-l-2 border-emerald-400 absolute bottom-0 left-0" />
             <div className="w-12 h-12 border-b-2 border-r-2 border-emerald-400 absolute bottom-0 right-0" />
             <span className="text-[11px] font-mono text-emerald-300 bg-black/60 px-3 py-1 rounded-full backdrop-blur-sm">
-              Center {detector === 'fruit' ? 'fruit' : 'leaf'} within frame
+              Center leaf within frame
             </span>
           </div>
         </div>
