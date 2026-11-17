@@ -21,9 +21,11 @@ import Modal from '../components/common/Modal';
 import ScanResultCard from '../components/scan/ScanResultCard';
 import { getDashboardStats, getScanHistory } from '../api/scans';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export const DashboardPage = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [stats, setStats] = useState(null);
@@ -69,10 +71,10 @@ export const DashboardPage = () => {
             </button>
             <div>
               <h1 className="text-xl font-bold text-slate-textDark tracking-tight">
-                Farm Pathology Dashboard
+                {t('Farm Pathology Dashboard')}
               </h1>
               <p className="text-xs text-slate-textMuted">
-                {user?.farm_name || "Verdant Valley Orchards"} • Real-time Folia Monitoring
+                {user?.farm_name || t('Verdant Valley Orchards')} • {t('Real-time Folia Monitoring')}
               </p>
             </div>
           </div>
@@ -80,7 +82,7 @@ export const DashboardPage = () => {
           <div className="flex items-center space-x-3">
             <button
               onClick={fetchData}
-              title="Refresh Data"
+              title={t('Refresh Data')}
               className="p-2.5 rounded-full border border-gray-200 text-slate-textMuted hover:text-black hover:bg-gray-50 transition-colors"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -91,7 +93,7 @@ export const DashboardPage = () => {
               className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#14251B] hover:bg-[#1B3B2B] text-white text-xs sm:text-sm font-bold shadow-soft-sm hover:shadow-soft-md transition-all gap-2"
             >
               <Plus className="w-4 h-4 text-brand-sage" />
-              Scan New Leaf
+              {t('Scan New Leaf')}
             </Link>
           </div>
         </header>
@@ -102,14 +104,18 @@ export const DashboardPage = () => {
           <div className="bg-gradient-to-r from-[#14251B] to-[#1B3B2B] rounded-3xl p-6 sm:p-8 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-soft-md">
             <div>
               <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
-                Automated Disease Surveillance
+                {t('Automated Disease Surveillance')}
               </span>
               <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
-                Good day, {user?.full_name?.split(' ')[0] || "Agronomist"}
+                {t('Good day, {{name}}', { name: user?.full_name?.split(' ')[0] || t('Agronomist') })}
               </h2>
               <p className="text-xs sm:text-sm text-gray-300 mt-1 max-w-xl">
-                Your farm foliar health is currently at <span className="font-bold text-emerald-300">{stats?.health_rate_percent || 94.8}%</span> vitality. 
-                {stats?.diseases_detected > 0 ? ` ${stats?.diseases_detected} active disease clusters under surveillance.` : " No severe disease epidemics detected."}
+                {t('Your farm foliar health is currently at {{rate}}% vitality. {{status}}', {
+                  rate: stats?.health_rate_percent || 94.8,
+                  status: stats?.diseases_detected > 0
+                    ? t('{{count}} active disease clusters under surveillance.', { count: stats.diseases_detected })
+                    : t('No severe disease epidemics detected.'),
+                })}
               </p>
             </div>
 
@@ -118,35 +124,35 @@ export const DashboardPage = () => {
               className="px-6 py-3 rounded-full bg-white text-[#14251B] text-xs sm:text-sm font-bold shadow-soft-md hover:bg-emerald-50 transition-all shrink-0 flex items-center gap-2"
             >
               <Sparkles className="w-4 h-4 text-emerald-600" />
-              Upload Foliage Photo
+              {t('Upload Foliage Photo')}
             </Link>
           </div>
 
           {/* 4 Stat Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <StatCard
-              title="Total Leaf Scans"
+              title={t('Total Leaf Scans')}
               value={stats?.total_scans || 0}
-              subtitle="Logged across farm zones"
+              subtitle={t('Logged across farm zones')}
               icon={Scan}
               trend={12}
             />
             <StatCard
-              title="Pathologies Detected"
+              title={t('Pathologies Detected')}
               value={stats?.diseases_detected || 0}
-              subtitle="Requiring intervention"
+              subtitle={t('Requiring intervention')}
               icon={AlertTriangle}
             />
             <StatCard
-              title="Healthy Foliage"
+              title={t('Healthy Foliage')}
               value={stats?.healthy_scans || 0}
               subtitle={`${stats?.health_rate_percent || 100}% of total scans`}
               icon={ShieldCheck}
             />
             <StatCard
-              title="Most Affected Crop"
-              value={stats?.most_affected_crop || "None"}
-              subtitle="Monitor for spore drift"
+              title={t('Most Affected Crop')}
+              value={stats?.most_affected_crop || t('None')}
+              subtitle={t('Monitor for spore drift')}
               icon={Leaf}
             />
           </div>
@@ -167,13 +173,13 @@ export const DashboardPage = () => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-slate-textDark">
-                Recent Diagnostic History
+                {t('Recent Diagnostic History')}
               </h3>
               <Link
                 to="/history"
                 className="text-xs font-semibold text-brand-forest hover:text-emerald-800 flex items-center gap-1"
               >
-                View Full Log ({stats?.total_scans || 0})
+                {t('View Full Log ({{count}})', { count: stats?.total_scans || 0 })}
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -189,7 +195,7 @@ export const DashboardPage = () => {
       <Modal
         isOpen={!!selectedScan}
         onClose={() => setSelectedScan(null)}
-        title="Diagnostic Report Details"
+        title={t('Diagnostic Report Details')}
         maxWidth="max-w-4xl"
       >
         {selectedScan && (

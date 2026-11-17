@@ -19,8 +19,10 @@ import Modal from '../components/common/Modal';
 import ScanResultCard from '../components/scan/ScanResultCard';
 import { getScanHistory, deleteScan } from '../api/scans';
 import { API_BASE_URL } from '../api/client';
+import { useTranslation } from 'react-i18next';
 
 export const HistoryPage = () => {
+  const { t, i18n } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scans, setScans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,12 +59,12 @@ export const HistoryPage = () => {
 
   const handleDelete = async (e, scanId) => {
     e.stopPropagation();
-    if (window.confirm("Are you sure you want to remove this scan record?")) {
+    if (window.confirm(t('Are you sure you want to remove this scan record?'))) {
       try {
         await deleteScan(scanId);
         setScans(scans.filter(s => s.id !== scanId));
       } catch (err) {
-        alert("Failed to delete record.");
+        alert(t('Failed to delete record.'));
       }
     }
   };
@@ -82,10 +84,10 @@ export const HistoryPage = () => {
             </button>
             <div>
               <h1 className="text-xl font-bold text-slate-textDark tracking-tight">
-                Diagnostic Scan Records
+                {t('Diagnostic Scan Records')}
               </h1>
               <p className="text-xs text-slate-textMuted">
-                Historical database of past leaf inspections and treatments
+                {t('Historical database of past leaf inspections and treatments')}
               </p>
             </div>
           </div>
@@ -97,7 +99,7 @@ export const HistoryPage = () => {
                 className={`p-1.5 rounded-full transition-all ${
                   viewMode === 'grid' ? 'bg-white shadow-soft-sm text-brand-dark' : 'text-slate-textMuted'
                 }`}
-                title="Grid View"
+                title={t('Grid View')}
               >
                 <LayoutGrid className="w-4 h-4" />
               </button>
@@ -106,7 +108,7 @@ export const HistoryPage = () => {
                 className={`p-1.5 rounded-full transition-all ${
                   viewMode === 'table' ? 'bg-white shadow-soft-sm text-brand-dark' : 'text-slate-textMuted'
                 }`}
-                title="Table View"
+                title={t('Table View')}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -122,7 +124,7 @@ export const HistoryPage = () => {
               <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
               <input
                 type="text"
-                placeholder="Search disease, crop, or zone..."
+                placeholder={t('Search disease, crop, or zone...')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-forest"
@@ -132,35 +134,35 @@ export const HistoryPage = () => {
             {/* Filter Selects */}
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-semibold text-slate-textMuted">Crop:</span>
+                <span className="text-xs font-semibold text-slate-textMuted">{t('Crop:')}</span>
                 <select
                   value={cropFilter}
                   onChange={(e) => setCropFilter(e.target.value)}
                   className="px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-semibold text-slate-textDark bg-white focus:outline-none focus:ring-2 focus:ring-brand-forest"
                 >
-                  <option value="All">All Crops</option>
-                  <option value="Tomato">Tomato</option>
-                  <option value="Potato">Potato</option>
-                  <option value="Corn">Corn (Maize)</option>
-                  <option value="Apple">Apple</option>
-                  <option value="Grape">Grape</option>
-                  <option value="Pepper">Bell Pepper</option>
+                  <option value="All">{t('All Crops')}</option>
+                  <option value="Tomato">{t('Tomato')}</option>
+                  <option value="Potato">{t('Potato')}</option>
+                  <option value="Corn">{t('Corn (Maize)')}</option>
+                  <option value="Apple">{t('Apple')}</option>
+                  <option value="Grape">{t('Grape')}</option>
+                  <option value="Pepper">{t('Bell Pepper')}</option>
                 </select>
               </div>
 
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-semibold text-slate-textMuted">Severity:</span>
+                <span className="text-xs font-semibold text-slate-textMuted">{t('Severity:')}</span>
                 <select
                   value={severityFilter}
                   onChange={(e) => setSeverityFilter(e.target.value)}
                   className="px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-semibold text-slate-textDark bg-white focus:outline-none focus:ring-2 focus:ring-brand-forest"
                 >
-                  <option value="All">All Severities</option>
-                  <option value="Healthy">Healthy</option>
-                  <option value="Low">Low</option>
-                  <option value="Moderate">Moderate</option>
-                  <option value="High">High</option>
-                  <option value="Critical">Critical</option>
+                  <option value="All">{t('All Severities')}</option>
+                  <option value="Healthy">{t('Healthy')}</option>
+                  <option value="Low">{t('Low')}</option>
+                  <option value="Moderate">{t('Moderate')}</option>
+                  <option value="High">{t('High')}</option>
+                  <option value="Critical">{t('Critical')}</option>
                 </select>
               </div>
             </div>
@@ -170,13 +172,13 @@ export const HistoryPage = () => {
           {loading ? (
             <div className="p-12 text-center text-slate-textMuted text-xs flex items-center justify-center gap-2">
               <RefreshCw className="w-4 h-4 animate-spin text-brand-forest" />
-              <span>Loading scan history records...</span>
+              <span>{t('Loading scan history records...')}</span>
             </div>
           ) : scans.length === 0 ? (
             <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-soft-sm">
               <History className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-              <h3 className="text-base font-bold text-slate-textDark">No Diagnostic Records Found</h3>
-              <p className="text-xs text-slate-textMuted mt-1">Try resetting search filters or upload a new crop leaf photo.</p>
+              <h3 className="text-base font-bold text-slate-textDark">{t('No Diagnostic Records Found')}</h3>
+              <p className="text-xs text-slate-textMuted mt-1">{t('Try resetting search filters or upload a new crop leaf photo.')}</p>
             </div>
           ) : viewMode === 'grid' ? (
             /* Grid Mode */
@@ -192,7 +194,7 @@ export const HistoryPage = () => {
                       day: 'numeric',
                       year: 'numeric',
                     })
-                  : 'Recent';
+                  : t('Recent');
 
                 return (
                   <div
@@ -250,13 +252,13 @@ export const HistoryPage = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50/70 border-b border-gray-100 text-[11px] font-bold text-slate-textMuted uppercase tracking-wider">
-                    <th className="py-3.5 px-6">Leaf Sample</th>
-                    <th className="py-3.5 px-6">Crop & Disease</th>
-                    <th className="py-3.5 px-6">Severity</th>
-                    <th className="py-3.5 px-6">Confidence</th>
-                    <th className="py-3.5 px-6">Zone</th>
-                    <th className="py-3.5 px-6">Date</th>
-                    <th className="py-3.5 px-6 text-right">Actions</th>
+                    <th className="py-3.5 px-6">{t('Leaf Sample')}</th>
+                    <th className="py-3.5 px-6">{t('Crop & Disease')}</th>
+                    <th className="py-3.5 px-6">{t('Severity')}</th>
+                    <th className="py-3.5 px-6">{t('Confidence')}</th>
+                    <th className="py-3.5 px-6">{t('Zone')}</th>
+                    <th className="py-3.5 px-6">{t('Date')}</th>
+                    <th className="py-3.5 px-6 text-right">{t('Actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-xs">
@@ -291,10 +293,10 @@ export const HistoryPage = () => {
                           {scan.confidence?.toFixed(1)}%
                         </td>
                         <td className="py-3 px-6 text-slate-textMuted">
-                          {scan.field_location || 'Zone A'}
+                          {scan.field_location || t('Zone A')}
                         </td>
                         <td className="py-3 px-6 text-slate-textMuted whitespace-nowrap">
-                          {scan.created_at ? new Date(scan.created_at).toLocaleDateString() : 'Recent'}
+                          {scan.created_at ? new Date(scan.created_at).toLocaleDateString(i18n.language) : t('Recent')}
                         </td>
                         <td className="py-3 px-6 text-right space-x-2">
                           <button
@@ -329,7 +331,7 @@ export const HistoryPage = () => {
       <Modal
         isOpen={!!selectedScan}
         onClose={() => setSelectedScan(null)}
-        title="Diagnostic Report Details"
+        title={t('Diagnostic Report Details')}
         maxWidth="max-w-4xl"
       >
         {selectedScan && (

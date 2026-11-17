@@ -1,7 +1,9 @@
 import React from 'react';
 import { ShieldCheck, AlertTriangle, AlertCircle, AlertOctagon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const SeverityBadge = ({ severity, size = "md" }) => {
+  const { t } = useTranslation();
   const sev = (severity || 'Moderate').toLowerCase();
 
   let styles = {
@@ -47,7 +49,7 @@ export const SeverityBadge = ({ severity, size = "md" }) => {
   return (
     <span className={`inline-flex items-center font-medium rounded-full border ${styles.bg} ${sizeClasses}`}>
       {styles.icon}
-      {styles.label}
+      {t(styles.label)}
     </span>
   );
 };

@@ -18,10 +18,12 @@ import {
 import Navbar from '../components/common/Navbar';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../api/client';
+import { useTranslation } from 'react-i18next';
 
 export const LandingPage = () => {
   const { isAuthenticated, demoLogin } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleDemoClick = async () => {
     try {
@@ -45,20 +47,20 @@ export const LandingPage = () => {
           {/* Tagline pill */}
           <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs sm:text-sm font-semibold mb-8 shadow-soft-sm">
             <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
-            <span>MobileNetV2 • 38 PlantVillage Categories</span>
+            <span>{t('MobileNetV2 • 38 PlantVillage Categories')}</span>
           </div>
 
           {/* Big Centered Headline */}
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#111111] tracking-tight leading-[1.08] mb-6">
-            AI-Powered Crop Health, <br className="hidden sm:inline" />
+            {t('AI-Powered Crop Health,')} <br className="hidden sm:inline" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#14251B] via-emerald-800 to-teal-700">
-              Instantly.
+              {t('Instantly.')}
             </span>
           </h1>
 
           {/* Subtext */}
           <p className="text-base sm:text-xl text-[#6B7280] max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
-            Detect foliar pathologies in seconds. Upload leaf imagery from tomatoes, potatoes, corn, and vineyards to receive clinical diagnoses, etiology, and organic treatment plans.
+            {t('Detect foliar pathologies in seconds. Upload leaf imagery from tomatoes, potatoes, corn, and vineyards to receive clinical diagnoses, etiology, and organic treatment plans.')}
           </p>
 
           {/* Two CTA Buttons */}
@@ -68,7 +70,7 @@ export const LandingPage = () => {
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#14251B] hover:bg-[#1B3B2B] text-white text-base font-bold shadow-soft-md hover:shadow-soft-xl hover:scale-[1.02] transition-all group"
             >
               <Scan className="w-5 h-5 mr-2.5 text-brand-sage group-hover:scale-110 transition-transform" />
-              Scan a Leaf Now
+              {t('Scan a Leaf Now')}
               <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
 
@@ -76,7 +78,7 @@ export const LandingPage = () => {
               onClick={handleDemoClick}
               className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-full bg-white hover:bg-gray-50 text-slate-textDark text-base font-semibold border border-gray-200 shadow-soft-sm hover:shadow-soft-md transition-all"
             >
-              Explore Live Demo
+              {t('Explore Live Demo')}
             </button>
           </div>
 
@@ -100,35 +102,35 @@ export const LandingPage = () => {
               <div className="p-6 sm:p-8 bg-[#FAFAFA] text-left">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-slate-textDark">Verdant Valley Orchards</h3>
-                    <p className="text-xs text-slate-textMuted">Live Agricultural Telemetry & Pathology Grid</p>
+                    <h3 className="text-xl font-bold text-slate-textDark">{t('Verdant Valley Orchards')}</h3>
+                    <p className="text-xs text-slate-textMuted">{t('Live Agricultural Telemetry & Pathology Grid')}</p>
                   </div>
                   <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-semibold text-xs flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                    Deep CNN Active
+                    {t('Deep CNN Active')}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                   <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-soft-sm">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">Total Scans</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">{t('Total Scans')}</span>
                     <p className="text-2xl font-bold text-slate-textDark mt-1">1,482</p>
                     <p className="text-[11px] text-emerald-600 font-medium mt-0.5">+14% this month</p>
                   </div>
                   <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-soft-sm">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">Healthy Rate</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">{t('Healthy Rate')}</span>
                     <p className="text-2xl font-bold text-emerald-600 mt-1">94.8%</p>
                     <p className="text-[11px] text-slate-textMuted mt-0.5">High canopy vigor</p>
                   </div>
                   <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-soft-sm">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">Pathologies</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">{t('Pathologies')}</span>
                     <p className="text-2xl font-bold text-amber-600 mt-1">78</p>
                     <p className="text-[11px] text-amber-700 font-medium mt-0.5">Late Blight detected</p>
                   </div>
                   <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-soft-sm">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">Model Latency</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-textMuted">{t('Model Latency')}</span>
                     <p className="text-2xl font-bold text-slate-textDark mt-1">82ms</p>
-                    <p className="text-[11px] text-slate-textMuted mt-0.5">Edge optimized</p>
+                    <p className="text-[11px] text-slate-textMuted mt-0.5">{t('Edge optimized')}</p>
                   </div>
                 </div>
 
@@ -137,14 +139,14 @@ export const LandingPage = () => {
                   <div className="flex items-center space-x-4">
                     <img
                       src="https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&fit=crop&w=150&q=80"
-                      alt="Sample leaf"
+                      alt={t('Sample leaf')}
                       className="w-16 h-16 rounded-xl object-cover border border-gray-200"
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-slate-textDark">Tomato Late Blight Detected</h4>
+                        <h4 className="font-bold text-slate-textDark">{t('Tomato Late Blight Detected')}</h4>
                         <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-semibold text-[11px] border border-rose-200">
-                          Critical Alert
+                          {t('Critical Alert')}
                         </span>
                       </div>
                       <p className="text-xs text-slate-textMuted mt-1">
@@ -154,7 +156,7 @@ export const LandingPage = () => {
                   </div>
 
                   <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-200">
-                    Action Plan Generated
+                    {t('Action Plan Generated')}
                   </span>
                 </div>
               </div>
@@ -168,13 +170,13 @@ export const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-xs font-bold uppercase tracking-wider text-brand-forest">
-              Clinical Precision Workflow
+              {t('Clinical Precision Workflow')}
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-textDark mt-2">
-              Three Simple Steps to Safeguard Your Crop Yield
+              {t('Three Simple Steps to Safeguard Your Crop Yield')}
             </h2>
             <p className="text-slate-textMuted text-sm sm:text-base mt-3">
-              Built for farmers in the field and commercial agricultural enterprises requiring instant diagnostics.
+              {t('Built for farmers in the field and commercial agricultural enterprises requiring instant diagnostics.')}
             </p>
           </div>
 
@@ -185,10 +187,10 @@ export const LandingPage = () => {
                 1
               </div>
               <h3 className="text-xl font-bold text-slate-textDark mb-3">
-                Snap or Upload Foliage
+                {t('Snap or Upload Foliage')}
               </h3>
               <p className="text-sm text-slate-textMuted leading-relaxed">
-                Take a direct smartphone snapshot or upload leaf imagery via our camera tool. Works even in variable natural sunlight conditions.
+                {t('Take a direct smartphone snapshot or upload leaf imagery via our camera tool. Works even in variable natural sunlight conditions.')}
               </p>
             </div>
 
@@ -198,10 +200,10 @@ export const LandingPage = () => {
                 2
               </div>
               <h3 className="text-xl font-bold text-slate-textDark mb-3">
-                Neural Vision Inference
+                {t('Neural Vision Inference')}
               </h3>
               <p className="text-sm text-slate-textMuted leading-relaxed">
-                MobileNetV2 compares a 224x224 leaf image against 38 PlantVillage categories. Results on field photos can differ from the training images.
+                {t('MobileNetV2 compares a 224x224 leaf image against 38 PlantVillage categories. Results on field photos can differ from the training images.')}
               </p>
             </div>
 
@@ -211,10 +213,10 @@ export const LandingPage = () => {
                 3
               </div>
               <h3 className="text-xl font-bold text-slate-textDark mb-3">
-                Actionable Treatment Plans
+                {t('Actionable Treatment Plans')}
               </h3>
               <p className="text-sm text-slate-textMuted leading-relaxed">
-                Receive instant organic biological remedies and conventional chemical treatments with dosages, safety periods, and preventative cultural tips.
+                {t('Receive instant organic biological remedies and conventional chemical treatments with dosages, safety periods, and preventative cultural tips.')}
               </p>
             </div>
           </div>
@@ -226,10 +228,10 @@ export const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-xs font-bold uppercase tracking-wider text-brand-forest">
-              Enterprise Grade Agronomy
+              {t('Enterprise Grade Agronomy')}
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-textDark mt-2">
-              Engineered for Scalable Farm Operations
+              {t('Engineered for Scalable Farm Operations')}
             </h2>
           </div>
 
@@ -238,9 +240,9 @@ export const LandingPage = () => {
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-5">
                 <Leaf className="w-6 h-6" />
               </div>
-              <h4 className="text-lg font-bold text-slate-textDark mb-2">Multi-Crop Support</h4>
+              <h4 className="text-lg font-bold text-slate-textDark mb-2">{t('Multi-Crop Support')}</h4>
               <p className="text-xs sm:text-sm text-slate-textMuted leading-relaxed">
-                Extensive coverage including Tomatoes, Potatoes, Corn, Apples, Bell Peppers, and Vineyards with dedicated pathology reference sheets.
+                {t('Extensive coverage including Tomatoes, Potatoes, Corn, Apples, Bell Peppers, and Vineyards with dedicated pathology reference sheets.')}
               </p>
             </div>
 
@@ -248,9 +250,9 @@ export const LandingPage = () => {
               <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center mb-5">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h4 className="text-lg font-bold text-slate-textDark mb-2">Dual Protocol Curation</h4>
+              <h4 className="text-lg font-bold text-slate-textDark mb-2">{t('Dual Protocol Curation')}</h4>
               <p className="text-xs sm:text-sm text-slate-textMuted leading-relaxed">
-                Clear distinction between OMRI-certified biological remedies for organic growers and registered chemical fungicides for commercial operations.
+                {t('Clear distinction between OMRI-certified biological remedies for organic growers and registered chemical fungicides for commercial operations.')}
               </p>
             </div>
 
@@ -258,9 +260,9 @@ export const LandingPage = () => {
               <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center mb-5">
                 <BarChart3 className="w-6 h-6" />
               </div>
-              <h4 className="text-lg font-bold text-slate-textDark mb-2">Farm Field Analytics</h4>
+              <h4 className="text-lg font-bold text-slate-textDark mb-2">{t('Farm Field Analytics')}</h4>
               <p className="text-xs sm:text-sm text-slate-textMuted leading-relaxed">
-                Track historical disease occurrences across farm quadrants to detect early outbreak clusters and time preventative spraying schedules.
+                {t('Track historical disease occurrences across farm quadrants to detect early outbreak clusters and time preventative spraying schedules.')}
               </p>
             </div>
           </div>
@@ -276,7 +278,7 @@ export const LandingPage = () => {
             </div>
             <div>
               <span className="text-lg font-extrabold text-white">AgroScan</span>
-              <p className="text-xs text-gray-400">Intelligent Crop Health & Disease Diagnostic Platform</p>
+              <p className="text-xs text-gray-400">{t('Intelligent Crop Health & Disease Diagnostic Platform')}</p>
             </div>
           </div>
 
@@ -285,9 +287,9 @@ export const LandingPage = () => {
           </p>
 
           <div className="flex items-center space-x-6 text-xs text-gray-400">
-            <Link to="/crops-library" className="hover:text-white transition-colors">Crop Library</Link>
+            <Link to="/crops-library" className="hover:text-white transition-colors">{t('Crop Library')}</Link>
             <a href={`${API_BASE_URL}/docs`} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
-              FastAPI Swagger UI
+              {t('FastAPI Swagger UI')}
             </a>
           </div>
         </div>

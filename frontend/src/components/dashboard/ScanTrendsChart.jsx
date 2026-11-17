@@ -9,8 +9,10 @@ import {
   ResponsiveContainer,
   Legend
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 export const ScanTrendsChart = ({ data }) => {
+  const { t } = useTranslation();
   const chartData = data && data.length > 0 ? data : [
     { day: "Mon", scans: 4, healthy: 3, diseased: 1 },
     { day: "Tue", scans: 7, healthy: 5, diseased: 2 },
@@ -26,14 +28,14 @@ export const ScanTrendsChart = ({ data }) => {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h4 className="text-base font-bold text-slate-textDark">
-            Foliar Health & Scan Velocity
+            {t('Foliar Health & Scan Velocity')}
           </h4>
           <p className="text-xs text-slate-textMuted">
-            Weekly leaf diagnostic volume and pathology detection rates
+            {t('Weekly leaf diagnostic volume and pathology detection rates')}
           </p>
         </div>
         <span className="text-xs font-semibold px-3 py-1 rounded-full bg-brand-sageLight/50 text-brand-dark">
-          Last 7 Days
+          {t('Last 7 Days')}
         </span>
       </div>
 
@@ -66,7 +68,7 @@ export const ScanTrendsChart = ({ data }) => {
             <Legend verticalAlign="top" align="right" height={36} iconType="circle" />
             <Area
               type="monotone"
-              name="Healthy Foliage"
+              name={t('Healthy Foliage')}
               dataKey="healthy"
               stroke="#10B981"
               strokeWidth={2.5}
@@ -75,7 +77,7 @@ export const ScanTrendsChart = ({ data }) => {
             />
             <Area
               type="monotone"
-              name="Pathology Detected"
+              name={t('Pathology Detected')}
               dataKey="diseased"
               stroke="#F59E0B"
               strokeWidth={2.5}

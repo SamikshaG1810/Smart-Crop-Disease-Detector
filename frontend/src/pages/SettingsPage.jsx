@@ -14,10 +14,12 @@ import {
 } from 'lucide-react';
 import Sidebar from '../components/common/Sidebar';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export const SettingsPage = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -26,7 +28,7 @@ export const SettingsPage = () => {
     email: user?.email || 'farmer@agroscan.com',
     farm_name: user?.farm_name || 'Verdant Valley Orchards',
     farm_location: user?.farm_location || 'Salinas Valley, CA',
-    language: 'en',
+    language: i18n.resolvedLanguage || 'en',
     alert_critical: true,
     alert_weekly: true,
   });
@@ -34,6 +36,7 @@ export const SettingsPage = () => {
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
+    if (e.target.name === 'language') i18n.changeLanguage(value);
   };
 
   const handleSave = (e) => {
@@ -62,10 +65,10 @@ export const SettingsPage = () => {
             </button>
             <div>
               <h1 className="text-xl font-bold text-slate-textDark tracking-tight">
-                Farm Profile & Preferences
+                {t('Farm Profile & Preferences')}
               </h1>
               <p className="text-xs text-slate-textMuted">
-                Manage your account credentials, regional presets, and telemetry alerts
+                {t('Manage your account credentials, regional presets, and telemetry alerts')}
               </p>
             </div>
           </div>
@@ -75,7 +78,7 @@ export const SettingsPage = () => {
           {savedSuccess && (
             <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
               <Check className="w-4 h-4 text-emerald-600" />
-              <span>Farm profile settings successfully saved.</span>
+              <span>{t('Farm profile settings successfully saved.')}</span>
             </div>
           )}
 
@@ -84,13 +87,13 @@ export const SettingsPage = () => {
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-soft-sm space-y-4">
               <h3 className="text-base font-bold text-slate-textDark flex items-center gap-2">
                 <User className="w-4 h-4 text-brand-forest" />
-                Agronomist Profile
+                {t('Agronomist Profile')}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-textMuted uppercase mb-1">
-                    Full Name
+                    {t('Full Name')}
                   </label>
                   <input
                     type="text"
@@ -103,7 +106,7 @@ export const SettingsPage = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-textMuted uppercase mb-1">
-                    Account Email
+                    {t('Account Email')}
                   </label>
                   <input
                     type="email"
@@ -120,13 +123,13 @@ export const SettingsPage = () => {
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-soft-sm space-y-4">
               <h3 className="text-base font-bold text-slate-textDark flex items-center gap-2">
                 <Building className="w-4 h-4 text-brand-forest" />
-                Agricultural Enterprise Details
+                {t('Agricultural Enterprise Details')}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-textMuted uppercase mb-1">
-                    Farm / Vineyard Name
+                    {t('Farm / Vineyard Name')}
                   </label>
                   <input
                     type="text"
@@ -139,7 +142,7 @@ export const SettingsPage = () => {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-textMuted uppercase mb-1">
-                    Geographic Region
+                    {t('Geographic Region')}
                   </label>
                   <input
                     type="text"
@@ -156,28 +159,25 @@ export const SettingsPage = () => {
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-soft-sm space-y-4">
               <h3 className="text-base font-bold text-slate-textDark flex items-center gap-2">
                 <Globe className="w-4 h-4 text-brand-forest" />
-                Regional & Language Settings
+                {t('Regional & Language Settings')}
               </h3>
 
               <div>
                 <label className="block text-xs font-bold text-slate-textMuted uppercase mb-1">
-                  Primary Language
+                  {t('Primary Language')}
                 </label>
                 <select
                   name="language"
-                  value={formData.language}
+                  value={i18n.resolvedLanguage}
                   onChange={handleChange}
                   className="w-full sm:w-72 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-forest bg-white"
                 >
-                  <option value="en">English (US / International)</option>
-                  <option value="es">Español (América Latina)</option>
-                  <option value="fr">Français (Agricole)</option>
-                  <option value="pt">Português (Brasil)</option>
-                  <option value="hi">हिंदी (Hindi)</option>
-                  <option value="sw">Kiswahili</option>
+                  <option value="en">English</option>
+                  <option value="mr">मराठी</option>
+                  <option value="hi">हिन्दी</option>
                 </select>
                 <p className="text-[11px] text-slate-textMuted mt-1">
-                  Changes interface terminology and pathology recommendations.
+                  {t('Changes interface terminology and pathology recommendations.')}
                 </p>
               </div>
             </div>
@@ -186,7 +186,7 @@ export const SettingsPage = () => {
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-soft-sm space-y-4">
               <h3 className="text-base font-bold text-slate-textDark flex items-center gap-2">
                 <Bell className="w-4 h-4 text-brand-forest" />
-                Pathology Alert Preferences
+                {t('Pathology Alert Preferences')}
               </h3>
 
               <div className="space-y-3">
@@ -199,8 +199,8 @@ export const SettingsPage = () => {
                     className="w-4 h-4 rounded text-brand-forest focus:ring-brand-forest"
                   />
                   <div>
-                    <p className="text-xs font-bold text-slate-textDark">Critical Epidemic Spore Alerts</p>
-                    <p className="text-[11px] text-slate-textMuted">Notify immediately when Late Blight or severe rot is identified.</p>
+                    <p className="text-xs font-bold text-slate-textDark">{t('Critical Epidemic Spore Alerts')}</p>
+                    <p className="text-[11px] text-slate-textMuted">{t('Notify immediately when Late Blight or severe rot is identified.')}</p>
                   </div>
                 </label>
 
@@ -213,8 +213,8 @@ export const SettingsPage = () => {
                     className="w-4 h-4 rounded text-brand-forest focus:ring-brand-forest"
                   />
                   <div>
-                    <p className="text-xs font-bold text-slate-textDark">Weekly Farm Foliage Digest</p>
-                    <p className="text-[11px] text-slate-textMuted">Receive statistical trends on scanned crop quadrants.</p>
+                    <p className="text-xs font-bold text-slate-textDark">{t('Weekly Farm Foliage Digest')}</p>
+                    <p className="text-[11px] text-slate-textMuted">{t('Receive statistical trends on scanned crop quadrants.')}</p>
                   </div>
                 </label>
               </div>
@@ -226,7 +226,7 @@ export const SettingsPage = () => {
                 type="submit"
                 className="px-6 py-3 rounded-full bg-[#14251B] hover:bg-[#1B3B2B] text-white text-xs sm:text-sm font-bold shadow-soft-sm hover:shadow-soft-md transition-all"
               >
-                Save Changes
+                {t('Save Changes')}
               </button>
 
               <button
@@ -235,7 +235,7 @@ export const SettingsPage = () => {
                 className="px-6 py-3 rounded-full border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs sm:text-sm font-bold transition-all flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                Sign Out of AgroScan
+                {t('Sign Out of AgroScan')}
               </button>
             </div>
           </form>

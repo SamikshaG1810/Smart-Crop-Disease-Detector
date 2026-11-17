@@ -3,11 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Sprout, ArrowRight, Menu, X, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE_URL } from '../../api/client';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export const Navbar = () => {
   const { isAuthenticated, user } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-gray-100">
@@ -22,29 +25,30 @@ export const Navbar = () => {
               Agro<span className="text-brand-sage">Scan</span>
             </span>
             <span className="text-[10px] uppercase font-bold tracking-widest text-slate-textMuted -mt-1">
-              Precision Crop Health
+              {t('Precision Crop Health')}
             </span>
           </div>
         </Link>
 
         {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-textDark/80">
-          <Link to="/#features" className="hover:text-brand-dark transition-colors">Features</Link>
-          <Link to="/#how-it-works" className="hover:text-brand-dark transition-colors">How It Works</Link>
-          <Link to="/crops-library" className="hover:text-brand-dark transition-colors">Crop Library</Link>
+          <Link to="/#features" className="hover:text-brand-dark transition-colors">{t('Features')}</Link>
+          <Link to="/#how-it-works" className="hover:text-brand-dark transition-colors">{t('How It Works')}</Link>
+          <Link to="/crops-library" className="hover:text-brand-dark transition-colors">{t('Crop Library')}</Link>
           <a href={`${API_BASE_URL}/docs`} target="_blank" rel="noreferrer" className="hover:text-brand-dark transition-colors flex items-center">
-            API Docs
+            {t('API Docs')}
           </a>
         </nav>
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center space-x-4">
+          <LanguageSwitcher />
           {isAuthenticated ? (
             <Link
               to="/dashboard"
               className="inline-flex items-center px-5 py-2.5 rounded-full bg-brand-dark hover:bg-brand-forest text-white text-sm font-semibold shadow-soft-sm transition-all hover:shadow-soft-md"
             >
-              Dashboard
+              {t('Dashboard')}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Link>
           ) : (
@@ -53,13 +57,13 @@ export const Navbar = () => {
                 to="/login"
                 className="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-textDark hover:text-black hover:bg-gray-100 transition-colors"
               >
-                Log In
+                {t('Log In')}
               </Link>
               <Link
                 to="/signup"
                 className="inline-flex items-center px-5 py-2.5 rounded-full bg-brand-dark hover:bg-brand-forest text-white text-sm font-semibold shadow-soft-sm transition-all hover:shadow-soft-md hover:scale-[1.02]"
               >
-                Get Started
+                {t('Get Started')}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </>
@@ -67,9 +71,12 @@ export const Navbar = () => {
         </div>
 
         {/* Mobile menu button */}
-        <div className="flex md:hidden">
+        <div className="flex md:hidden items-center gap-2">
+          <LanguageSwitcher compact />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? t('Close menu') : t('Open menu')}
+            aria-expanded={mobileMenuOpen}
             className="p-2 rounded-xl text-slate-textMuted hover:text-black hover:bg-gray-100"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -85,21 +92,21 @@ export const Navbar = () => {
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-slate-textDark"
           >
-            Features
+            {t('Features')}
           </Link>
           <Link
             to="/#how-it-works"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-slate-textDark"
           >
-            How It Works
+            {t('How It Works')}
           </Link>
           <Link
             to="/crops-library"
             onClick={() => setMobileMenuOpen(false)}
             className="block py-2 text-sm font-medium text-slate-textDark"
           >
-            Crop Library
+            {t('Crop Library')}
           </Link>
           <div className="pt-4 border-t border-gray-100 flex flex-col space-y-2">
             {isAuthenticated ? (
@@ -108,7 +115,7 @@ export const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full text-center py-2.5 rounded-full bg-brand-dark text-white font-semibold text-sm"
               >
-                Go to Dashboard
+                {t('Go to Dashboard')}
               </Link>
             ) : (
               <>
@@ -117,14 +124,14 @@ export const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-2.5 rounded-full border border-gray-200 text-slate-textDark font-medium text-sm"
                 >
-                  Log In
+                  {t('Log In')}
                 </Link>
                 <Link
                   to="/signup"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center py-2.5 rounded-full bg-brand-dark text-white font-semibold text-sm"
                 >
-                  Sign Up
+                  {t('Sign Up')}
                 </Link>
               </>
             )}

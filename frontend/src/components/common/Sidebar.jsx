@@ -13,18 +13,21 @@ import {
   User
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Upload New Scan', path: '/scan', icon: ScanLine, highlight: true },
-    { label: 'Scan History', path: '/history', icon: History },
-    { label: 'Crop Library', path: '/crops', icon: BookOpen },
-    { label: 'Agronomist Profile', path: '/profile', icon: User },
-    { label: 'Settings', path: '/settings', icon: Settings },
+    { label: t('Dashboard'), path: '/dashboard', icon: LayoutDashboard },
+    { label: t('Upload New Scan'), path: '/scan', icon: ScanLine, highlight: true },
+    { label: t('Scan History'), path: '/history', icon: History },
+    { label: t('Crop Library'), path: '/crops', icon: BookOpen },
+    { label: t('Agronomist Profile'), path: '/profile', icon: User },
+    { label: t('Settings'), path: '/settings', icon: Settings },
   ];
 
   const handleLogout = () => {
@@ -45,8 +48,11 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
               Agro<span className="text-brand-sage">Scan</span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-brand-sageLight font-mono">v1.0</span>
             </h1>
-            <p className="text-[11px] text-gray-400 font-medium">Precision Pathology</p>
+            <p className="text-[11px] text-gray-400 font-medium">{t('Precision Pathology')}</p>
           </div>
+        </div>
+        <div className="px-5 pt-4">
+          <LanguageSwitcher />
         </div>
 
         {/* Quick Scan CTA Pill */}
@@ -60,7 +66,7 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
           >
             <span className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-emerald-200 animate-pulse" />
-              Scan Leaf Now
+              {t('Scan Leaf Now')}
             </span>
             <ChevronRight className="w-4 h-4 text-emerald-200 group-hover:translate-x-1 transition-transform" />
           </button>
@@ -118,7 +124,7 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
               e.stopPropagation();
               handleLogout();
             }}
-            title="Log out"
+            title={t('Log out')}
             className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-white/5 transition-colors shrink-0"
           >
             <LogOut className="w-4 h-4" />
@@ -127,7 +133,7 @@ export const Sidebar = ({ mobileOpen, setMobileOpen }) => {
 
         <div className="px-2 text-[10px] text-gray-400 text-center flex items-center justify-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-ping" />
-          Engine: MobileNetV2 Active
+          {t('MobileNetV2 Active')}
         </div>
       </div>
     </div>

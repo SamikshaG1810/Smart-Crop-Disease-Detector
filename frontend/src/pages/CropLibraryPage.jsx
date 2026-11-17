@@ -17,9 +17,11 @@ import SeverityBadge from '../components/common/SeverityBadge';
 import Modal from '../components/common/Modal';
 import { getSupportedCrops } from '../api/crops';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export const CropLibraryPage = () => {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [crops, setCrops] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,14 +63,14 @@ export const CropLibraryPage = () => {
         <div className="flex items-center space-x-3 mb-2">
           <BookOpen className="w-5 h-5 text-emerald-400" />
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
-            Agronomy Reference Library
+            {t('Agronomy Reference Library')}
           </span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-          Plant Pathology & Treatment Encyclopedia
+          {t('Plant Pathology & Treatment Encyclopedia')}
         </h2>
         <p className="text-xs sm:text-sm text-gray-300 mt-1 max-w-2xl">
-          Verified pathology profiles, etiology, diagnostic symptoms, and curated organic & chemical treatments for high-value agricultural crops.
+          {t('Verified pathology profiles, etiology, diagnostic symptoms, and curated organic & chemical treatments for high-value agricultural crops.')}
         </p>
       </div>
 
@@ -78,7 +80,7 @@ export const CropLibraryPage = () => {
           <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
           <input
             type="text"
-            placeholder="Search crop or disease..."
+            placeholder={t('Search crop or disease...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-forest"
@@ -97,7 +99,7 @@ export const CropLibraryPage = () => {
                   : 'bg-gray-100 text-slate-textMuted hover:text-slate-textDark'
               }`}
             >
-              {crop === 'Corn' ? 'Corn (Maize)' : crop}
+              {crop === 'Corn' ? t('Corn (Maize)') : t(crop)}
             </button>
           ))}
         </div>
@@ -106,7 +108,7 @@ export const CropLibraryPage = () => {
       {/* Disease Cards Grid */}
       {loading ? (
         <div className="py-12 text-center text-xs text-slate-textMuted">
-          Loading crop pathology records...
+          {t('Loading crop pathology records...')}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -119,13 +121,13 @@ export const CropLibraryPage = () => {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
-                    {d.crop_name}
+                    {t(d.crop_name)}
                   </span>
                   <SeverityBadge severity={d.severity} size="sm" />
                 </div>
 
                 <h3 className="text-lg font-bold text-slate-textDark group-hover:text-brand-forest transition-colors">
-                  {d.disease_name}
+                  {t(d.disease_name)}
                 </h3>
 
                 {d.scientific_name && (
@@ -135,22 +137,22 @@ export const CropLibraryPage = () => {
                 )}
 
                 <p className="text-xs text-slate-textDark line-clamp-3 leading-relaxed mb-4">
-                  {d.description}
+                  {t(d.description)}
                 </p>
 
                 {/* Quick Symptoms teaser */}
                 {d.symptoms && d.symptoms.length > 0 && (
                   <div className="bg-gray-50 p-3 rounded-2xl border border-gray-100 text-[11px] text-slate-700 space-y-1 mb-4">
                     <span className="font-bold text-[10px] uppercase text-slate-textMuted tracking-wider block">
-                      Key Symptom:
+                      {t('Key Symptom:')}
                     </span>
-                    <p className="truncate">• {d.symptoms[0]}</p>
+                    <p className="truncate">• {t(d.symptoms[0])}</p>
                   </div>
                 )}
               </div>
 
               <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-brand-forest group-hover:translate-x-0.5 transition-transform">
-                <span>View Full Protocol & Treatments</span>
+                <span>{t('View Full Protocol & Treatments')}</span>
                 <ChevronRight className="w-4 h-4" />
               </div>
             </div>
@@ -162,7 +164,7 @@ export const CropLibraryPage = () => {
       <Modal
         isOpen={!!selectedDisease}
         onClose={() => setSelectedDisease(null)}
-        title={selectedDisease ? `${selectedDisease.crop_name}: ${selectedDisease.disease_name}` : ""}
+        title={selectedDisease ? `${t(selectedDisease.crop_name)}: ${t(selectedDisease.disease_name)}` : ""}
         maxWidth="max-w-3xl"
       >
         {selectedDisease && (
@@ -170,14 +172,14 @@ export const CropLibraryPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-xs font-bold uppercase text-emerald-700 tracking-wider">
-                  {selectedDisease.crop_name}
+                  {t(selectedDisease.crop_name)}
                 </span>
                 <h3 className="text-2xl font-bold text-slate-textDark mt-0.5">
-                  {selectedDisease.disease_name}
+                  {t(selectedDisease.disease_name)}
                 </h3>
                 {selectedDisease.scientific_name && (
                   <p className="text-xs italic text-slate-textMuted font-serif">
-                    Pathogen: {selectedDisease.scientific_name}
+                    {t('Pathogen: {{name}}', { name: selectedDisease.scientific_name })}
                   </p>
                 )}
               </div>
@@ -186,32 +188,32 @@ export const CropLibraryPage = () => {
 
             <div>
               <h4 className="text-xs font-bold uppercase text-slate-textMuted tracking-wider mb-1.5">
-                Pathology Overview
+                {t('Pathology Overview')}
               </h4>
               <p className="text-sm text-slate-textDark leading-relaxed">
-                {selectedDisease.description}
+                {t(selectedDisease.description)}
               </p>
             </div>
 
             <div className="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/60">
               <h4 className="text-xs font-bold uppercase text-amber-900 tracking-wider mb-1">
-                Etiology & Favorable Conditions
+                {t('Etiology & Favorable Conditions')}
               </h4>
               <p className="text-xs text-amber-950 leading-normal">
-                {selectedDisease.causes}
+                {t(selectedDisease.causes)}
               </p>
             </div>
 
             {selectedDisease.symptoms && selectedDisease.symptoms.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold uppercase text-slate-textMuted tracking-wider mb-2">
-                  Diagnostic Visual Symptoms
+                  {t('Diagnostic Visual Symptoms')}
                 </h4>
                 <div className="space-y-1.5">
                   {selectedDisease.symptoms.map((s, idx) => (
                     <div key={idx} className="flex items-start space-x-2 text-xs text-slate-textDark">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                      <span>{s}</span>
+                      <span>{t(s)}</span>
                     </div>
                   ))}
                 </div>
@@ -222,10 +224,10 @@ export const CropLibraryPage = () => {
             <div className="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-200">
               <div className="flex items-center space-x-2 text-emerald-900 font-bold text-xs uppercase tracking-wider mb-2">
                 <Leaf className="w-4 h-4 text-emerald-600" />
-                <span>Organic / Biological Control Protocol</span>
+                <span>{t('Organic / Biological Control Protocol')}</span>
               </div>
               <p className="text-xs text-slate-800 leading-relaxed whitespace-pre-line">
-                {selectedDisease.organic_treatment}
+                {t(selectedDisease.organic_treatment)}
               </p>
             </div>
 
@@ -233,20 +235,20 @@ export const CropLibraryPage = () => {
             <div className="bg-amber-50/50 p-5 rounded-2xl border border-amber-200">
               <div className="flex items-center space-x-2 text-amber-950 font-bold text-xs uppercase tracking-wider mb-2">
                 <FlaskConical className="w-4 h-4 text-amber-600" />
-                <span>Conventional Fungicide Application</span>
+                <span>{t('Conventional Fungicide Application')}</span>
               </div>
               <p className="text-xs text-slate-800 leading-relaxed whitespace-pre-line">
-                {selectedDisease.chemical_treatment}
+                {t(selectedDisease.chemical_treatment)}
               </p>
             </div>
 
             {/* Prevention */}
             <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-200">
               <h4 className="text-xs font-bold uppercase text-blue-950 tracking-wider mb-1.5">
-                Long-Term Prevention & Agronomic Practices
+                {t('Long-Term Prevention & Agronomic Practices')}
               </h4>
               <p className="text-xs text-slate-800 leading-relaxed whitespace-pre-line">
-                {selectedDisease.prevention}
+                {t(selectedDisease.prevention)}
               </p>
             </div>
           </div>
@@ -270,10 +272,10 @@ export const CropLibraryPage = () => {
               </button>
               <div>
                 <h1 className="text-xl font-bold text-slate-textDark tracking-tight">
-                  Crop Pathology Library
+                  {t('Crop Pathology Library')}
                 </h1>
                 <p className="text-xs text-slate-textMuted">
-                  Diagnostic reference data for 19+ PlantVillage crop diseases
+                  {t('Diagnostic reference data for 19+ PlantVillage crop diseases')}
                 </p>
               </div>
             </div>

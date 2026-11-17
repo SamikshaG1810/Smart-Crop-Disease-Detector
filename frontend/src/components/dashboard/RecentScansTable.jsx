@@ -2,13 +2,15 @@ import React from 'react';
 import { Eye, ExternalLink, Calendar, MapPin } from 'lucide-react';
 import SeverityBadge from '../common/SeverityBadge';
 import { API_BASE_URL } from '../../api/client';
+import { useTranslation } from 'react-i18next';
 
 export const RecentScansTable = ({ scans, onSelectScan }) => {
+  const { t, i18n } = useTranslation();
   if (!scans || scans.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-8 border border-gray-100 text-center shadow-soft-sm">
-        <p className="text-sm font-semibold text-slate-textDark mb-1">No scans recorded yet</p>
-        <p className="text-xs text-slate-textMuted">Upload or capture your first crop leaf photo to start generating diagnoses.</p>
+        <p className="text-sm font-semibold text-slate-textDark mb-1">{t('No scans recorded yet')}</p>
+        <p className="text-xs text-slate-textMuted">{t('Upload or capture your first crop leaf photo to start generating diagnoses.')}</p>
       </div>
     );
   }
@@ -18,10 +20,10 @@ export const RecentScansTable = ({ scans, onSelectScan }) => {
       <div className="p-6 border-b border-gray-100 flex items-center justify-between">
         <div>
           <h4 className="text-base font-bold text-slate-textDark">
-            Recent Pathology Scans
+            {t('Recent Pathology Scans')}
           </h4>
           <p className="text-xs text-slate-textMuted">
-            Chronological log of AI leaf classifications across your farm zones
+            {t('Chronological log of AI leaf classifications across your farm zones')}
           </p>
         </div>
       </div>
@@ -30,13 +32,13 @@ export const RecentScansTable = ({ scans, onSelectScan }) => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/70 border-b border-gray-100 text-[11px] font-bold text-slate-textMuted uppercase tracking-wider">
-              <th className="py-3 px-6">Leaf Sample</th>
-              <th className="py-3 px-6">Crop & Disease</th>
-              <th className="py-3 px-6">Severity</th>
-              <th className="py-3 px-6">Confidence</th>
-              <th className="py-3 px-6">Field Zone</th>
-              <th className="py-3 px-6">Date</th>
-              <th className="py-3 px-6 text-right">Action</th>
+              <th className="py-3 px-6">{t('Leaf Sample')}</th>
+              <th className="py-3 px-6">{t('Crop & Disease')}</th>
+              <th className="py-3 px-6">{t('Severity')}</th>
+              <th className="py-3 px-6">{t('Confidence')}</th>
+              <th className="py-3 px-6">{t('Field Zone')}</th>
+              <th className="py-3 px-6">{t('Date')}</th>
+              <th className="py-3 px-6 text-right">{t('Action')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 text-xs text-slate-textDark">
@@ -46,12 +48,12 @@ export const RecentScansTable = ({ scans, onSelectScan }) => {
                 : `${API_BASE_URL}${scan.image_url}`;
 
               const scanDate = scan.created_at
-                ? new Date(scan.created_at).toLocaleDateString(undefined, {
+                ? new Date(scan.created_at).toLocaleDateString(i18n.language, {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',
                   })
-                : 'Recent';
+                : t('Recent');
 
               return (
                 <tr
@@ -98,7 +100,7 @@ export const RecentScansTable = ({ scans, onSelectScan }) => {
                   <td className="py-3 px-6 text-slate-textMuted">
                     <span className="inline-flex items-center gap-1">
                       <MapPin className="w-3 h-3 text-gray-400" />
-                      {scan.field_location || 'Zone A'}
+                      {scan.field_location || t('Zone A')}
                     </span>
                   </td>
 
@@ -119,7 +121,7 @@ export const RecentScansTable = ({ scans, onSelectScan }) => {
                         onSelectScan && onSelectScan(scan);
                       }}
                       className="p-2 rounded-xl text-slate-textMuted hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
-                      title="View Report"
+                      title={t('View Report')}
                     >
                       <Eye className="w-4 h-4" />
                     </button>

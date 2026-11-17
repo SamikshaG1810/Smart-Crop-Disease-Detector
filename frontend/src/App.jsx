@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -12,11 +13,14 @@ const CropLibraryPage = lazy(() => import('./pages/CropLibraryPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
-const PageLoader = () => (
-  <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-xs font-semibold text-slate-textMuted">
-    Loading...
-  </div>
-);
+const PageLoader = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="min-h-screen bg-[#FAFAFA] flex items-center justify-center text-xs font-semibold text-slate-textMuted">
+      {t('Loading...')}
+    </div>
+  );
+};
 
 // Protected route wrapper
 const ProtectedRoute = ({ children }) => {

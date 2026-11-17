@@ -1,32 +1,34 @@
 import React, { useRef, useState } from 'react';
 import { UploadCloud, Sparkles, Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }) => {
+  const { t } = useTranslation();
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
 
   // Sample quick test images for instant one-click testing
   const samplePresets = [
     {
-      title: "Tomato Blight",
+      title: t('Tomato Blight'),
       crop: "Tomato",
       url: "https://images.unsplash.com/photo-1592417817098-8f3d69109853?auto=format&fit=crop&w=600&q=80",
       filename: "tomato_late_blight_sample.jpg"
     },
     {
-      title: "Potato Blight",
+      title: t('Potato Blight'),
       crop: "Potato",
       url: "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?auto=format&fit=crop&w=600&q=80",
       filename: "potato_early_blight_sample.jpg"
     },
     {
-      title: "Corn Rust",
+      title: t('Corn Rust'),
       crop: "Corn",
       url: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80",
       filename: "corn_common_rust_sample.jpg"
     },
     {
-      title: "Healthy Leaf",
+      title: t('Healthy Leaf'),
       crop: "Tomato",
       url: "https://images.unsplash.com/photo-1533038590840-1cde6e668a91?auto=format&fit=crop&w=600&q=80",
       filename: "healthy_leaf_sample.jpg"
@@ -58,7 +60,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
 
   const handleFiles = (file) => {
     if (!file.type.startsWith('image/')) {
-      alert("Please upload an image file (.jpg, .png, .webp)");
+      alert(t('Please upload an image file (.jpg, .png, .webp)'));
       return;
     }
     onFileSelected(file);
@@ -71,7 +73,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
       const file = new File([blob], preset.filename, { type: 'image/jpeg' });
       onFileSelected(file);
     } catch (err) {
-      console.error("Could not load preset image:", err);
+      console.error(t('Could not load preset image:'), err);
     }
   };
 
@@ -103,17 +105,17 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
             </div>
 
             <h4 className="text-base sm:text-lg font-bold text-slate-textDark mb-1">
-              Drag and drop a leaf photograph
+              {t('Drag and drop a leaf photograph')}
             </h4>
             <p className="text-xs sm:text-sm text-slate-textMuted max-w-md mx-auto mb-4">
-              Use a clear, close-up leaf photo in natural light. Supported: JPG, PNG, WEBP.
+              {t('Use a clear, close-up leaf photo in natural light. Supported: JPG, PNG, WEBP.')}
             </p>
 
             <button
               type="button"
               className="px-5 py-2.5 rounded-full bg-brand-dark hover:bg-brand-forest text-white text-xs sm:text-sm font-semibold shadow-soft-sm transition-all"
             >
-              Browse Local Files
+              {t('Browse Local Files')}
             </button>
           </div>
 
@@ -121,7 +123,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
           <div className="mt-6">
             <div className="flex items-center space-x-2 text-xs font-semibold text-slate-textMuted uppercase tracking-wider mb-3">
               <Sparkles className="w-3.5 h-3.5 text-brand-sage" />
-              <span>Or click a quick test sample leaf:</span>
+              <span>{t('Or click a quick test sample leaf:')}</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {samplePresets.map((p, idx) => (
@@ -141,7 +143,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
                       {p.title}
                     </p>
                     <p className="text-[10px] text-slate-textMuted truncate">
-                      {p.crop} sample
+                      {t('{{crop}} sample', { crop: p.crop })}
                     </p>
                   </div>
                 </button>
@@ -155,7 +157,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
             <div className="relative w-48 h-48 rounded-2xl overflow-hidden border border-gray-200 bg-black shrink-0">
               <img
                 src={previewUrl}
-                alt="Selected Leaf Preview"
+                alt={t('Selected Leaf Preview')}
                 className="w-full h-full object-cover"
               />
               <span className="absolute bottom-2 left-2 text-[10px] bg-black/70 text-white px-2 py-0.5 rounded-full font-mono">
@@ -166,13 +168,13 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
             <div className="flex-1 text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start space-x-2 text-emerald-600 text-xs font-semibold uppercase tracking-wider mb-1">
                 <Check className="w-4 h-4" />
-                <span>Image Loaded & Calibrated</span>
+                <span>{t('Image Loaded & Calibrated')}</span>
               </div>
               <h4 className="text-lg font-bold text-slate-textDark mb-1 truncate max-w-sm">
-                {selectedFile?.name || "Leaf Image Selected"}
+                {selectedFile?.name || t('Leaf Image Selected')}
               </h4>
               <p className="text-xs text-slate-textMuted mb-4">
-                Ready for MobileNetV2 classification across 38 PlantVillage categories. Field-photo results may vary.
+                {t('Ready for MobileNetV2 classification across 38 PlantVillage categories. Field-photo results may vary.')}
               </p>
 
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
@@ -181,7 +183,7 @@ export const Dropzone = ({ onFileSelected, selectedFile, previewUrl, clearFile }
                   onClick={clearFile}
                   className="px-4 py-2 rounded-full border border-gray-200 text-xs font-semibold text-slate-textDark hover:bg-gray-50 transition-colors"
                 >
-                  Choose Different Image
+                  {t('Choose Different Image')}
                 </button>
               </div>
             </div>

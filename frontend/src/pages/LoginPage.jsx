@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sprout, ArrowRight, Lock, Mail, AlertCircle, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +13,7 @@ export const LoginPage = () => {
 
   const { login, demoLogin } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,9 +32,9 @@ export const LoginPage = () => {
       } else if (typeof detail === 'string') {
         setError(detail);
       } else if (!err.response) {
-        setError('Cannot reach the API. Check the backend URL and CORS configuration.');
+        setError(t('Cannot reach the API. Check the backend URL and CORS configuration.'));
       } else {
-        setError(`Sign-in failed (HTTP ${err.response.status}). Please try again.`);
+        setError(t('Sign-in failed (HTTP {{status}}). Please try again.', { status: err.response.status }));
       }
     } finally {
       setLoading(false);
@@ -45,7 +48,7 @@ export const LoginPage = () => {
       await demoLogin();
       navigate('/dashboard');
     } catch {
-      setError("Unable to log in with demo account. Ensure backend is running.");
+      setError(t('Unable to log in with demo account. Ensure backend is running.'));
     } finally {
       setLoading(false);
     }
@@ -53,6 +56,7 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="absolute right-4 top-4 sm:right-6 sm:top-6"><LanguageSwitcher /></div>
       {/* Top Logo */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center space-x-3 mb-6 group">
@@ -64,10 +68,10 @@ export const LoginPage = () => {
           </span>
         </Link>
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-textDark tracking-tight">
-          Welcome back to AgroScan
+          {t('Welcome back to AgroScan')}
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-slate-textMuted">
-          Log in to access your farm diagnostics and scan history dashboard
+          {t('Log in to access your farm diagnostics and scan history dashboard')}
         </p>
       </div>
 
@@ -81,7 +85,7 @@ export const LoginPage = () => {
             className="w-full mb-6 py-3 px-4 rounded-full bg-emerald-50 border border-emerald-200/80 hover:bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-soft-sm"
           >
             <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
-            <span>Instant Demo Sign-In (Dr. Vance)</span>
+            <span>{t('Instant Demo Sign-In (Dr. Vance)')}</span>
           </button>
 
           <div className="relative mb-6">
@@ -90,7 +94,7 @@ export const LoginPage = () => {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-white px-3 text-slate-textMuted font-semibold">
-                Or sign in with email
+                {t('Or sign in with email')}
               </span>
             </div>
           </div>
@@ -105,7 +109,7 @@ export const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-textMuted mb-1.5">
-                Work Email Address
+                {t('Work Email Address')}
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -122,7 +126,7 @@ export const LoginPage = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-textMuted mb-1.5">
-                Password
+                {t('Password')}
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -142,15 +146,15 @@ export const LoginPage = () => {
               disabled={loading}
               className="w-full mt-2 py-3 px-4 rounded-full bg-[#14251B] hover:bg-[#1B3B2B] text-white text-sm font-bold shadow-soft-sm hover:shadow-soft-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
             >
-              {loading ? "Authenticating..." : "Sign In to Farm Dashboard"}
+              {loading ? t('Authenticating') : t('Sign In to Farm Dashboard')}
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
           <div className="mt-6 text-center text-xs text-slate-textMuted">
-            Don't have an account yet?{' '}
+            {t("Don't have an account yet?")}{' '}
             <Link to="/signup" className="font-bold text-brand-forest hover:underline">
-              Create an account
+              {t('Create an account')}
             </Link>
           </div>
         </div>
