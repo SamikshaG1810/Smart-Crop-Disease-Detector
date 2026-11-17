@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, CheckCircle2, Loader2, Cpu } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const ScanningAnimation = ({ imagePreview }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
 
   const steps = [
-    "Preprocessing leaf geometry & RGB channels...",
-    "Extracting deep convolutional feature maps...",
-    "Cross-referencing PlantVillage pathology classes...",
-    "Generating severity metrics & treatment protocols..."
+    t("Preprocessing leaf geometry & RGB channels..."),
+    t("Extracting deep convolutional feature maps..."),
+    t("Cross-referencing PlantVillage pathology classes..."),
+    t("Generating severity metrics & treatment protocols...")
   ];
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export const ScanningAnimation = ({ imagePreview }) => {
         {imagePreview && (
           <img
             src={imagePreview}
-            alt="Scanning Leaf"
+            alt={t('Scanning Leaf')}
             className="w-full h-full object-cover opacity-80 filter brightness-95"
           />
         )}
@@ -40,18 +42,18 @@ export const ScanningAnimation = ({ imagePreview }) => {
 
         <div className="absolute bottom-2 inset-x-0 text-center">
           <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-black/60 text-emerald-400 font-bold">
-            MobileNetV2 Inference
+            {t('MobileNetV2 Inference')}
           </span>
         </div>
       </div>
 
       <div className="flex items-center space-x-2 text-brand-dark font-bold text-lg mb-2">
         <Cpu className="w-5 h-5 text-brand-sage animate-spin text-emerald-600" />
-        <span>AI Diagnostic Engine Analyzing...</span>
+        <span>{t('AI Diagnostic Engine Analyzing...')}</span>
       </div>
 
       <p className="text-xs text-slate-textMuted max-w-sm mb-6">
-        Evaluating chlorotic patterns, lesion concentricity, and vascular necrosis.
+        {t('Evaluating chlorotic patterns, lesion concentricity, and vascular necrosis.')}
       </p>
 
       {/* Checklist of steps */}

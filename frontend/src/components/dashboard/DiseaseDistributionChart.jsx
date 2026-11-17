@@ -7,10 +7,12 @@ import {
   Tooltip, 
   Legend 
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const COLORS = ['#10B981', '#F59E0B', '#F97316', '#EF4444', '#6366F1', '#14B8A6'];
 
 export const DiseaseDistributionChart = ({ data }) => {
+  const { t } = useTranslation();
   const chartData = data && data.length > 0 ? data : [
     { name: 'Tomato', value: 4 },
     { name: 'Potato', value: 2 },
@@ -24,10 +26,10 @@ export const DiseaseDistributionChart = ({ data }) => {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h4 className="text-base font-bold text-slate-textDark">
-            Crop Category Breakdown
+            {t('Crop Category Breakdown')}
           </h4>
           <p className="text-xs text-slate-textMuted">
-            Active diagnostic scans grouped by botanical family
+            {t('Active diagnostic scans grouped by botanical family')}
           </p>
         </div>
       </div>

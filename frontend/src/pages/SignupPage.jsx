@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Sprout, ArrowRight, Lock, Mail, User, MapPin, Building, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 export const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ export const SignupPage = () => {
 
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,9 +38,9 @@ export const SignupPage = () => {
       } else if (typeof detail === 'string') {
         setError(detail);
       } else if (!err.response) {
-        setError('Cannot reach the API. Check the production API URL, backend availability, and CORS settings.');
+        setError(t('Cannot reach the API. Check the production API URL, backend availability, and CORS settings.'));
       } else {
-        setError('Registration failed. Please try again.');
+        setError(t('Registration failed. Please try again.'));
       }
     } finally {
       setLoading(false);
@@ -46,6 +49,7 @@ export const SignupPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="absolute right-4 top-4 sm:right-6 sm:top-6"><LanguageSwitcher /></div>
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link to="/" className="inline-flex items-center space-x-3 mb-6 group">
           <div className="w-12 h-12 rounded-2xl bg-[#14251B] flex items-center justify-center text-brand-sage shadow-soft-md group-hover:scale-105 transition-transform">
@@ -56,10 +60,10 @@ export const SignupPage = () => {
           </span>
         </Link>
         <h2 className="text-2xl sm:text-3xl font-bold text-slate-textDark tracking-tight">
-          Create Your Agronomist Account
+          {t('Create Your Agronomist Account')}
         </h2>
         <p className="mt-2 text-xs sm:text-sm text-slate-textMuted">
-          Start diagnosing crop diseases and managing foliar health records
+          {t('Start diagnosing crop diseases and managing foliar health records')}
         </p>
       </div>
 
@@ -75,7 +79,7 @@ export const SignupPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-textMuted mb-1.5">
-                Full Name
+                {t('Full Name')}
               </label>
               <div className="relative">
                 <User className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -93,7 +97,7 @@ export const SignupPage = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-textMuted mb-1.5">
-                Work Email
+                {t('Work Email')}
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -111,7 +115,7 @@ export const SignupPage = () => {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-textMuted mb-1.5">
-                Password
+                {t('Password')}
               </label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -122,7 +126,7 @@ export const SignupPage = () => {
                   minLength={6}
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Minimum 6 characters"
+                  placeholder={t('Minimum 6 characters')}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-forest focus:border-transparent"
                 />
               </div>
@@ -131,7 +135,7 @@ export const SignupPage = () => {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-textMuted mb-1.5">
-                  Farm Name
+                  {t('Farm Name')}
                 </label>
                 <div className="relative">
                   <Building className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -147,7 +151,7 @@ export const SignupPage = () => {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-textMuted mb-1.5">
-                  Location
+                  {t('Location')}
                 </label>
                 <div className="relative">
                   <MapPin className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -167,15 +171,15 @@ export const SignupPage = () => {
               disabled={loading}
               className="w-full mt-2 py-3 px-4 rounded-full bg-[#14251B] hover:bg-[#1B3B2B] text-white text-sm font-bold shadow-soft-sm hover:shadow-soft-md transition-all flex items-center justify-center gap-2 disabled:opacity-60"
             >
-              {loading ? "Creating Account..." : "Create Free AgroScan Account"}
+              {loading ? t('Creating Account...') : t('Create Free AgroScan Account')}
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
           <div className="mt-6 text-center text-xs text-slate-textMuted">
-            Already have an account?{' '}
+            {t('Already have an account?')}{' '}
             <Link to="/login" className="font-bold text-brand-forest hover:underline">
-              Log in
+              {t('Log In')}
             </Link>
           </div>
         </div>

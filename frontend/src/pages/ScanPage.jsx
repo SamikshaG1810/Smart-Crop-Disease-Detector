@@ -15,6 +15,7 @@ import CameraCapture from '../components/scan/CameraCapture';
 import ScanningAnimation from '../components/scan/ScanningAnimation';
 import ScanResultCard from '../components/scan/ScanResultCard';
 import { predictLeafDisease } from '../api/scans';
+import { useTranslation } from 'react-i18next';
 
 class ScanErrorBoundary extends Component {
   constructor(props) { super(props); this.state = { hasError: false, error: null }; }
@@ -22,8 +23,8 @@ class ScanErrorBoundary extends Component {
   render() {
     if (this.state.hasError) return (
       <div className="p-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm">
-        <strong>Result display error:</strong> {this.state.error?.message || 'Unknown error'}
-        <button onClick={() => this.setState({ hasError: false, error: null })} className="ml-4 underline text-xs">Try again</button>
+        <strong>{this.props.t('Result display error:')}</strong> {this.state.error?.message || this.props.t('Unknown error')}
+        <button onClick={() => this.setState({ hasError: false, error: null })} className="ml-4 underline text-xs">{this.props.t('Try again')}</button>
       </div>
     );
     return this.props.children;
@@ -31,6 +32,7 @@ class ScanErrorBoundary extends Component {
 }
 
 export const ScanPage = () => {
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mode, setMode] = useState('upload'); // 'upload' or 'camera'
   const [selectedFile, setSelectedFile] = useState(null);
@@ -66,7 +68,7 @@ export const ScanPage = () => {
 
   const handleAnalyze = async () => {
     if (!selectedFile) {
-      setError("Please select or capture a crop leaf image first.");
+      setError(t('Please select or capture a crop leaf image first.'));
       return;
     }
 
@@ -92,19 +94,19 @@ export const ScanPage = () => {
               return field ? `${field}: ${d.msg}` : (d.msg || JSON.stringify(d));
             }).join('; ')
           : typeof detail === 'string' ? detail : null;
-        if (status === 401) setError('Session expired. Please log in again.');
-        else if (status === 403) setError('Permission denied.');
+        if (status === 401) setError(t('Session expired. Please log in again.'));
+        else if (status === 403) setError(t('Permission denied.'));
         else if (status === 400) setError(detailMsg || 'Invalid image or request.');
         else if (status === 404) setError('The scan endpoint was not found. Verify the deployed backend URL and version.');
         else if (status === 422) setError(detailMsg || 'The scan request is missing required information.');
-        else if (status === 413) setError('Image too large. Please upload a smaller file.');
+        else if (status === 413) setError(t('Image too large. Please upload a smaller file.'));
         else if (status === 415) setError(detailMsg || 'Unsupported image type. Upload a JPEG, PNG, or WEBP image.');
         else if (status === 503) setError('ML model unavailable on server. Contact support.');
         else if (status === 502) setError('Backend crashed during inference. Check Render logs.');
         else if (status >= 500) setError(detailMsg || `Backend inference failed (${status}). Check Render logs.`);
         else setError(detailMsg || `Server error (${status}).`);
       } else if (err.request) {
-        setError('No response from the API. Check the production API URL, backend availability, and CORS settings.');
+        setError(t('No response from the API. Check the production API URL, backend availability, and CORS settings.'));
       } else {
         setError(err.message || 'Unexpected error.');
       }
@@ -135,9 +137,9 @@ export const ScanPage = () => {
               <Menu className="w-6 h-6" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-slate-textDark tracking-tight">Crop Leaf Diagnostic Studio</h1>
+              <h1 className="text-xl font-bold text-slate-textDark tracking-tight">{t('Crop Leaf Diagnostic Studio')}</h1>
               <p className="text-xs text-slate-textMuted">
-                Instant AI Classification & Integrated Pest Management Guidance
+                {t('Instant AI Classification & Integrated Pest Management Guidance')}
               </p>
             </div>
           </div>
@@ -151,7 +153,7 @@ export const ScanPage = () => {
 
           {/* If analysis succeeded, show diagnostic result card */}
           {!isAnalyzing && scanResult && (
-            <ScanErrorBoundary>
+            <ScanErrorBoundary t={t}>
               <ScanResultCard
                 result={scanResult}
                 onResetScan={resetAll}
@@ -166,9 +168,9 @@ export const ScanPage = () => {
               <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-soft-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-textDark">Select Leaf Image Intake Method</h2>
+                    <h2 className="text-xl font-bold text-slate-textDark">{t('Select Leaf Image Intake Method')}</h2>
                     <p className="text-xs sm:text-sm text-slate-textMuted">
-                      Upload a clear leaf photo or capture one with your camera
+                      {t('Upload a clear leaf photo or capture one with your camera')}
                     </p>
                   </div>
 
@@ -184,7 +186,7 @@ export const ScanPage = () => {
                       }`}
                     >
                       <UploadCloud className="w-4 h-4 text-emerald-400" />
-                      <span>Upload / Presets</span>
+                      <span>{t('Upload / Presets')}</span>
                     </button>
                     <button
                       type="button"
@@ -196,7 +198,7 @@ export const ScanPage = () => {
                       }`}
                     >
                       <Camera className="w-4 h-4 text-emerald-400" />
-                      <span>Live Camera</span>
+                      <span>{t('Live Camera')}</span>
                     </button>
                   </div>
                 </div>
@@ -232,38 +234,38 @@ export const ScanPage = () => {
               {previewUrl && (
                 <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-soft-sm">
                   <h3 className="text-sm font-bold uppercase tracking-wider text-slate-textMuted mb-4">
-                    Agricultural Context & Field Metadata
+                    {t('Agricultural Context & Field Metadata')}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <div>
                       <label className="block text-xs font-bold text-slate-textDark mb-1.5 flex items-center gap-1.5">
                         <MapPin className="w-3.5 h-3.5 text-brand-forest" />
-                        Field Zone / Plot Location
+                        {t('Field Zone / Plot Location')}
                       </label>
                       <select
                         value={fieldLocation}
                         onChange={(e) => setFieldLocation(e.target.value)}
                         className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-forest bg-white"
                       >
-                        <option>Field Zone A - Greenhouse 1</option>
-                        <option>Field Zone A - High Tunnel</option>
-                        <option>Field Zone B - Potato Furrows</option>
-                        <option>Field Zone C - Sweet Corn Plot</option>
-                        <option>Vineyard Hillside Slope</option>
-                        <option>Orchard Block 7 (Apples)</option>
+                        <option>{t('Field Zone A - Greenhouse 1')}</option>
+                        <option>{t('Field Zone A - High Tunnel')}</option>
+                        <option>{t('Field Zone B - Potato Furrows')}</option>
+                        <option>{t('Field Zone C - Sweet Corn Plot')}</option>
+                        <option>{t('Vineyard Hillside Slope')}</option>
+                        <option>{t('Orchard Block 7 (Apples)')}</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="block text-xs font-bold text-slate-textDark mb-1.5 flex items-center gap-1.5">
                         <FileText className="w-3.5 h-3.5 text-brand-forest" />
-                        Scouting Notes (Optional)
+                        {t('Scouting Notes (Optional)')}
                       </label>
                       <input
                         type="text"
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
-                        placeholder="e.g. Heavy morning dew observed on lower third"
+                        placeholder={t('e.g. Heavy morning dew observed on lower third')}
                         className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-forest"
                       />
                     </div>
@@ -278,7 +280,7 @@ export const ScanPage = () => {
                       className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-full bg-[#14251B] hover:bg-[#1B3B2B] text-white text-base font-bold shadow-soft-md hover:shadow-soft-xl hover:scale-[1.02] transition-all gap-2"
                     >
                       <Sparkles className="w-5 h-5 text-emerald-400 animate-pulse" />
-                      Run AI Pathology Diagnosis
+                      {t('Run AI Pathology Diagnosis')}
                       <ArrowRight className="w-4 h-4 ml-1" />
                     </button>
                   </div>

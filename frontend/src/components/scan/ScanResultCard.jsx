@@ -15,8 +15,10 @@ import {
 } from 'lucide-react';
 import SeverityBadge from '../common/SeverityBadge';
 import { API_BASE_URL } from '../../api/client';
+import { useTranslation } from 'react-i18next';
 
 export const ScanResultCard = ({ result, onResetScan }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('organic'); // 'organic', 'chemical', 'prevention'
 
   if (!result) return null;
@@ -71,7 +73,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
           <div>
             <div className="flex items-center space-x-3 mb-1">
               <span className="text-xs font-semibold uppercase tracking-wider text-emerald-300">
-                {detector === 'fruit' ? `${crop_name} Fruit Disease` : `${crop_name} Diagnosis`}
+                {detector === 'fruit' ? t('{{crop}} Fruit Disease', { crop: t(crop_name) }) : t('{{crop}} Diagnosis', { crop: t(crop_name) })}
               </span>
               {detector === 'leaf' && <SeverityBadge severity={severity} size="sm" />}
             </div>
@@ -80,11 +82,11 @@ export const ScanResultCard = ({ result, onResetScan }) => {
             </h2>
             {disease_info?.scientific_name && (
               <p className="text-xs italic text-gray-300 font-serif mt-0.5">
-                Pathogen: {disease_info.scientific_name}
+                {t('Pathogen: {{name}}', { name: disease_info.scientific_name })}
               </p>
             )}
             <p className="mt-2 text-[11px] text-emerald-200">
-              Inference engine: {engineLabel}
+              {t('Inference engine: {{engine}}', { engine: t(engineLabel) })}
             </p>
           </div>
         </div>
@@ -93,7 +95,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
         <div className="flex items-center space-x-4 bg-white/10 px-5 py-3 rounded-2xl border border-white/10 self-start md:self-auto">
           <div className="text-right">
             <p className="text-[10px] uppercase font-bold tracking-wider text-gray-300">
-              {detector === 'fruit' ? 'Relative SVM Score' : 'Model Score'}
+              {detector === 'fruit' ? t('Relative SVM Score') : t('Model Score')}
             </p>
             <p className="text-2xl font-black text-white font-mono">
               {confidence.toFixed(1)}%
@@ -136,7 +138,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
               <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-[11px] flex justify-between items-center">
-                <span>Field Sample Image</span>
+                <span>{t('Field Sample Image')}</span>
                 <span className="font-mono text-emerald-300">
                   {detector === 'fruit' ? '128x128 K-means features' : '224x224 RGB input'}
                 </span>
@@ -147,7 +149,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
             {top_probabilities.length > 1 && (
               <div className="mt-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
                 <p className="text-[11px] font-bold text-slate-textMuted uppercase tracking-wider mb-2">
-                  {detector === 'fruit' ? 'Top Fruit Disease Classes' : 'Top Pathology Candidates'}
+                  {detector === 'fruit' ? t('Top Fruit Disease Classes') : t('Top Pathology Candidates')}
                 </p>
                 <div className="space-y-2">
                   {top_probabilities.map((prob, idx) => (
@@ -173,12 +175,12 @@ export const ScanResultCard = ({ result, onResetScan }) => {
           <div className="lg:col-span-8 flex flex-col justify-between space-y-6">
             {detector === 'fruit' ? (
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm leading-relaxed text-amber-950">
-                Fruit category: Citrus. This classifier does not identify fruit species. Its relative SVM score is not a calibrated probability; it was supplied with 150 feature samples across five disease labels and has no verified treatment guidance. Non-citrus fruits are unsupported. Confirm results with a qualified agricultural specialist before acting.
+                {t('Fruit category: Citrus. This classifier does not identify fruit species. Its relative SVM score is not a calibrated probability; it was supplied with 150 feature samples across five disease labels and has no verified treatment guidance. Non-citrus fruits are unsupported. Confirm results with a qualified agricultural specialist before acting.')}
               </div>
             ) : <>
             <div>
               <h3 className="text-sm font-bold text-slate-textMuted uppercase tracking-wider mb-2">
-                Pathology Overview
+                {t('Pathology Overview')}
               </h3>
               <p className="text-slate-textDark text-sm sm:text-base leading-relaxed">
                 {disease_info?.description || "No description available for this disease."}
@@ -189,10 +191,10 @@ export const ScanResultCard = ({ result, onResetScan }) => {
             <div className="bg-emerald-50/50 rounded-2xl p-4 border border-emerald-100">
               <h4 className="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 text-emerald-700" />
-                Underlying Etiology & Causes
+                {t('Underlying Etiology & Causes')}
               </h4>
               <p className="text-xs sm:text-sm text-emerald-950 leading-normal">
-                {disease_info?.causes || "Fungal or environmental factors."}
+                {disease_info?.causes || t("Fungal or environmental factors.")}
               </p>
             </div>
 
@@ -200,7 +202,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
             {disease_info?.symptoms && disease_info.symptoms.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold text-slate-textMuted uppercase tracking-wider mb-2">
-                  Diagnostic Visual Symptoms
+                  {t('Diagnostic Visual Symptoms')}
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {disease_info.symptoms.map((symptom, idx) => (
@@ -223,7 +225,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
         {detector !== 'fruit' && <div className="pt-4 border-t border-gray-100">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <h3 className="text-lg font-bold text-slate-textDark flex items-center gap-2">
-              <span>Treatment Protocols & Recommendations</span>
+              <span>{t('Treatment Protocols & Recommendations')}</span>
             </h3>
 
             {/* Tab Pill Buttons */}
@@ -238,7 +240,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
                 }`}
               >
                 <Leaf className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Organic / Biological</span>
+                <span>{t('Organic / Biological')}</span>
               </button>
               <button
                 type="button"
@@ -250,7 +252,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
                 }`}
               >
                 <FlaskConical className="w-3.5 h-3.5 text-amber-300" />
-                <span>Chemical / Conventional</span>
+                <span>{t('Chemical / Conventional')}</span>
               </button>
               <button
                 type="button"
@@ -262,7 +264,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
                 }`}
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-blue-300" />
-                <span>Preventative IPM</span>
+                <span>{t('Preventative IPM')}</span>
               </button>
             </div>
           </div>
@@ -273,10 +275,10 @@ export const ScanResultCard = ({ result, onResetScan }) => {
               <div className="bg-emerald-50/30 border-emerald-200/60 p-6 rounded-2xl">
                 <div className="flex items-center space-x-2 text-emerald-900 font-bold text-sm mb-3">
                   <Leaf className="w-4 h-4 text-emerald-600" />
-                  <span>OMRI-Compliant & Biological Control Protocol</span>
+                  <span>{t('OMRI-Compliant & Biological Control Protocol')}</span>
                 </div>
                 <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-line">
-                  {disease_info?.organic_treatment || "Follow standard organic bio-fungicide guidelines."}
+                  {disease_info?.organic_treatment || t("Follow standard organic bio-fungicide guidelines.")}
                 </p>
               </div>
             )}
@@ -285,13 +287,13 @@ export const ScanResultCard = ({ result, onResetScan }) => {
               <div className="bg-amber-50/30 border-amber-200/60 p-6 rounded-2xl">
                 <div className="flex items-center space-x-2 text-amber-950 font-bold text-sm mb-3">
                   <FlaskConical className="w-4 h-4 text-amber-600" />
-                  <span>Conventional Fungicide / Bactericide Regimen</span>
+                  <span>{t('Conventional Fungicide / Bactericide Regimen')}</span>
                 </div>
                 <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-line">
-                  {disease_info?.chemical_treatment || "Apply registered agricultural fungicides following label precautions."}
+                  {disease_info?.chemical_treatment || t("Apply registered agricultural fungicides following label precautions.")}
                 </p>
                 <p className="mt-4 text-[11px] text-amber-800 italic bg-amber-100/60 p-3 rounded-xl border border-amber-200">
-                  Always consult local agricultural extension services, wear PPE, and observe pre-harvest intervals (PHI) before application.
+                  {t('Always consult local agricultural extension services, wear PPE, and observe pre-harvest intervals (PHI) before application.')}
                 </p>
               </div>
             )}
@@ -300,10 +302,10 @@ export const ScanResultCard = ({ result, onResetScan }) => {
               <div className="bg-blue-50/30 border-blue-200/60 p-6 rounded-2xl">
                 <div className="flex items-center space-x-2 text-blue-950 font-bold text-sm mb-3">
                   <ShieldCheck className="w-4 h-4 text-blue-600" />
-                  <span>Agronomic Cultural Practices & Long-Term Prevention</span>
+                  <span>{t('Agronomic Cultural Practices & Long-Term Prevention')}</span>
                 </div>
                 <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-line">
-                  {disease_info?.prevention || "Implement crop rotation and hygienic canopy pruning."}
+                  {disease_info?.prevention || t("Implement crop rotation and hygienic canopy pruning.")}
                 </p>
               </div>
             )}
@@ -319,7 +321,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
               className="inline-flex items-center px-4 py-2 rounded-full border border-gray-200 text-xs font-semibold text-slate-textDark hover:bg-gray-50 transition-colors"
             >
               <Printer className="w-3.5 h-3.5 mr-2 text-gray-500" />
-              Print Diagnostic Report
+              {t('Print Diagnostic Report')}
             </button>
           </div>
 
@@ -329,7 +331,7 @@ export const ScanResultCard = ({ result, onResetScan }) => {
             className="inline-flex items-center px-6 py-2.5 rounded-full bg-brand-dark hover:bg-brand-forest text-white text-xs sm:text-sm font-bold shadow-soft-sm hover:shadow-soft-md transition-all group"
           >
             <RefreshCw className="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-500" />
-            {detector === 'fruit' ? 'Scan Another Fruit' : 'Scan Another Crop Leaf'}
+            {detector === 'fruit' ? t('Scan Another Fruit') : t('Scan Another Crop Leaf')}
           </button>
         </div>
       </div>
